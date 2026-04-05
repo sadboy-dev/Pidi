@@ -2,7 +2,7 @@
 local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/UI/refs/heads/main/Jriik/UI.lua"))()
 
 -- Load fitur list
-local Features = loadstring(game:HttpGet("URL_FEATURES_LUA_KAMU"))()
+local Features = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/features.lua"))()
 
 -- Simpan tab biar gak dobel
 local Tabs = {}
