@@ -1,63 +1,78 @@
 -- features.lua
-local Features = {}
+local Features = {
 
-Features.List = {
-
-    -- MAIN
     {
-        Category = "Main",
-        Type = "Button",
-        Name = "Auto Farm",
-        Description = "Farming otomatis"
-    },
-    {
-        Category = "Main",
-        Type = "Button",
-        Name = "Auto Quest",
-        Description = "Auto ambil quest"
-    },
-
-    -- PLAYER
-    {
-        Category = "Player",
-        Type = "Toggle",
-        Name = "Infinite Jump",
-        Description = "Loncat tanpa batas"
-    },
-    {
-        Category = "Player",
-        Type = "Toggle",
-        Name = "No Clip",
-        Description = "Tembus tembok"
+        Name = "Main",
+        Items = {
+            {
+                Text = "Auto Farm",
+                Func = function()
+                    print("Auto Farm clicked")
+                end
+            },
+            {
+                Text = "Auto Quest",
+                Func = function()
+                    print("Auto Quest clicked")
+                end
+            }
+        }
     },
 
-    -- VISUAL
     {
-        Category = "Visual",
-        Type = "Toggle",
-        Name = "ESP Player",
-        Description = "Lihat player"
-    },
-    {
-        Category = "Visual",
-        Type = "Toggle",
-        Name = "ESP Item",
-        Description = "Lihat item"
+        Name = "Player",
+        Items = {
+            {
+                Text = "Infinite Jump",
+                Func = function()
+                    print("Infinite Jump clicked")
+                end
+            },
+            {
+                Text = "No Clip",
+                Func = function()
+                    print("No Clip clicked")
+                end
+            }
+        }
     },
 
-    -- TELEPORT
     {
-        Category = "Teleport",
-        Type = "Button",
-        Name = "Teleport Spawn",
-        Description = "Ke spawn"
+        Name = "Visual",
+        Items = {
+            {
+                Text = "ESP Player",
+                Func = function()
+                    print("ESP Player clicked")
+                end
+            },
+            {
+                Text = "ESP Item",
+                Func = function()
+                    print("ESP Item clicked")
+                end
+            }
+        }
     },
+
     {
-        Category = "Teleport",
-        Type = "Button",
-        Name = "Teleport Island",
-        Description = "Ke island"
+        Name = "Teleport",
+        Items = {
+            {
+                Text = "Teleport Spawn",
+                Func = function()
+                    print("Teleport Spawn clicked")
+                end
+            },
+            {
+                Text = "Teleport Island",
+                Func = function()
+                    print("Teleport Island clicked")
+                end
+            }
+        }
     }
+
 }
 
 return Features
