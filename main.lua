@@ -1,5 +1,6 @@
 -- main.lua
-
+local G_ = {} -- atau cara lain kamu mendeklarasikannya
+G_.modules = require(game:GetService("ReplicatedStorage").modules)
 if _G.__MAIN then return end
 _G.__MAIN = true
 
@@ -15,6 +16,10 @@ local isSpectatorMode = false
 local function enableSpectatorFeatures()
     if isSpectatorMode then return end
     isSpectatorMode = true
+    player.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        IpadView.applyFOV()
+    end)
 
     print("🔌 ACTIVATING: SPECTATOR FEATURES")
     IpadView.On()
