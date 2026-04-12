@@ -1,6 +1,4 @@
 -- main.lua
-local G_ = {} -- atau cara lain kamu mendeklarasikannya
-G_.modules = require(game:GetService("ReplicatedStorage").modules)
 if _G.__MAIN then return end
 _G.__MAIN = true
 
