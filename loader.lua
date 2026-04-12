@@ -1,36 +1,48 @@
--- LOADER.LUA
+-- LOADER.LUA - VERSI FINAL & CEPAT
 if _G.__LOADER then return end
 _G.__LOADER = true
 
+-- LINK GITHUB KAMU
 local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
-local cacheBuster = "?v="..os.time()
 
-local files = {
+-- DAFTAR FILE YANG AKAN DI-DOWNLOAD
+local FILES = {
     "getRole.lua",
+    "espPlayer.lua",
     "boostFps.lua",
     "ipadView.lua",
     "crosshair.lua",
-    "espPlayer.lua"
+    "espGene.lua" -- FILE BARU
 }
 
-print("📂 LOADING MODULES...")
+print("====================================")
+print("🔄 MEMUAT SCRIPT...")
+print("====================================")
 
-local function loadModule(filename)
-    local link = BASE_URL .. filename .. cacheBuster
+local function loadModule(name)
+    local link = BASE_URL .. name .. "?t=" .. os.time() -- ⚡ ANTI CACHE
+    
     local success, err = pcall(function()
         local code = game:HttpGet(link)
         loadstring(code)()
     end)
+
     if success then
-        print("✅ " .. filename)
+        print("✅ " .. name)
     else
-        warn("❌ " .. filename)
+        warn("❌ " .. name .. " - GAGAL")
     end
 end
 
-for _, file in pairs(files) do
+-- DOWNLOAD & JALANKAN SEMUA
+for _, file in pairs(FILES) do
     loadModule(file)
-    task.wait(0.1)
+    task.wait(0.05) -- Sedikit jeda biar urut
 end
 
+print("====================================")
 print("✅ LOADER SELESAI!")
+print("====================================")
+
+-- KITA PANGGIL MAIN.LUA LANGSUNG DISINI
+loadModule("main.lua")
