@@ -5,6 +5,9 @@ _G.__MAIN = true
 -- TUNGGU SEMUA SIAP
 repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair
 task.wait(0.5)
+repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair and _G.espGene
+task.wait(0.5)
+
 
 print("====================================")
 print("✅ SCRIPT LOAD SELESAI")
@@ -15,6 +18,7 @@ local espPlayer = _G.espPlayer
 local boostFps = _G.boostFps
 local ipadView = _G.ipadView
 local crosshair = _G.crosshair
+local espGene = _G.espGene
 
 local lastRole = nil
 
@@ -42,3 +46,5 @@ end
 
 -- ESP JALAN SENDIRI
 _G.espPlayer.Start()
+_G.espPlayer.Start()
+_G.espGene.Start()
