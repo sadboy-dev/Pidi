@@ -116,9 +116,7 @@ local function startAll()
     end
 
     if Modules.AutoGene and Modules.AutoGene.Start then
-        Modules.AutoGene.Start(function()
-            return ROLE
-        end)
+        Modules.AutoGene.Start()   -- tidak perlu kirim getRole lagi
     end
 
     if Modules.Aimbot and Modules.Aimbot.Start then
