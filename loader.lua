@@ -10,7 +10,6 @@ local moduleFunc = loadstring(moduleCode)
 
 if moduleFunc then
     moduleFunc()
-    print("🔄 DOWNLOADING MAIN...")
     local mainCode = game:HttpGet(LINK_MAIN)
     local mainFunc = loadstring(mainCode)
     if mainFunc then
