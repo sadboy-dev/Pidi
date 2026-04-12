@@ -41,12 +41,5 @@ RunService.RenderStepped:Connect(function()
 
         -- KIRIM SINYAL KE MAIN.LUA
         UpdateEvent:Fire()
-
-        -- Print di sini saja
-        if isLobbyNow then
-            print("📡 [getRole] STATUS: LOBBY")
-        else
-            print("📡 [getRole] STATUS: INGAME | ROLE:", team)
-        end
     end
 end)
