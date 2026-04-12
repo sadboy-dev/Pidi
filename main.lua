@@ -5,6 +5,9 @@ _G.__MAIN = true
 
 print("✅ [MAIN] SCRIPT START!")
 
+-- LOAD MODULE
+local RoleModule = require(script:WaitForChild("modules"):WaitForChild("getRole"))
+
 --------------------------------------------------
 -- 1. IPAD VIEW
 --------------------------------------------------
@@ -188,7 +191,7 @@ local function DisableSpec()
 end
 
 local function onUpdate()
-    local data = _G.RoleData
+    local data = RoleModule.Data
     local isSpec = data.IsLobby or data.TeamName == "spectator" or data.TeamName == ""
 
     if isSpec then
@@ -201,8 +204,7 @@ local function onUpdate()
 end
 
 -- JALANKAN
-repeat task.wait() until _G.RoleData and _G.RoleUpdate
-_G.RoleUpdate:Connect(onUpdate)
+RoleModule.OnUpdate:Connect(onUpdate)
 task.wait(0.1)
 onUpdate()
 
