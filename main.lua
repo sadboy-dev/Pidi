@@ -14,21 +14,22 @@ local Camera = workspace.CurrentCamera
 
 local function getTeam(plr)
     if plr.Team then
-        local n = plr.Team.Name:lower()
-        return n
+        return plr.Team.Name:lower()
     end
-    return plr.Team.Name
+    return "" -- Kembalikan kosong kalau tidak ada team
 end
 
-local team = ""
+local lastTeam = ""
+
 RunService.RenderStepped:Connect(function()
-        local team = getTeam(player)
-        if team == Spectator or team == spectator then
-            print("📍 STATUS: LOBBY")
-        else
-            print("📍 STATUS: INGAME")
-            print("🎭 ROLE KAMU:",team)
-        end
-        lastTeam = team
+    local team = getTeam(player)
+    
+    if team == "spectator" then
+        print("📍 STATUS: LOBBY")
+    else
+        print("📍 STATUS: INGAME")
+        print("🎭 ROLE KAMU:", team)
     end
-end
+    
+    lastTeam = team
+end)
