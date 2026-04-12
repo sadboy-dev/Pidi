@@ -12,10 +12,10 @@ local function onStatusChanged()
     local team = _G.RoleData.TeamName
 
     if isLobby then
-        print("Tim: " .. team)
+        print("📡 Tim: " .. team)
         -- Matikan fitur di sini kalau perlu
     else
-        print("Tim: " .. team)
+        print("🎮 Tim: " .. team)
         -- Jalanin fitur Aimbot/ESP di sini
     end
 end
