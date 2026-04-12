@@ -3,9 +3,12 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- WAJIB ADA INI
+-- AMBIL FUNGSI DARI GLOBAL
 local getRole = _G.getRole
 
+-- ==============================================
+-- FUNGSI BUAT ESP
+-- ==============================================
 local function applyESP(plr)
     if plr == player then return end
 
@@ -33,34 +36,52 @@ local function applyESP(plr)
     end)
 end
 
+-- ==============================================
+-- LOOP UPDATE WARNA
+-- ==============================================
 RunService.RenderStepped:Connect(function()
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                local role = getRole(plr)
-                if role == "KILLER" then
-                    h.FillColor = Color3.fromRGB(255,0,0)
+                -- CEK APAKAH getRole ADA DAN BISA DIPAKAI
+                if getRole then
+                    local role = getRole(plr)
+                    
+                    if role == "KILLER" then
+                        h.FillColor = Color3.fromRGB(255, 0, 0) -- MERAH
+                    elseif role == "SURVIVOR" then
+                        h.FillColor = Color3.fromRGB(0, 170, 255) -- BIRU
+                    else
+                        h.FillColor = Color3.fromRGB(255, 255, 255) -- PUTIH
+                    end
                 else
-                    h.FillColor = Color3.fromRGB(0,170,255)
+                    -- Kalau getRole gak ada, warna abu-abu biar gak merah semua
+                    h.FillColor = Color3.fromRGB(128, 128, 128)
                 end
             end
         end
     end
 end)
 
+-- ==============================================
+-- JALANKAN OTOMATIS
+-- ==============================================
 for _, p in pairs(Players:GetPlayers()) do
     applyESP(p)
 end
 Players.PlayerAdded:Connect(applyESP)
 
--- Simpan ke Global
-_G.espPlayer = {}
-_G.espPlayer.Start = function()
-    print("✅ ESP AKTIF")
-end
-_G.espPlayer.Stop = function()
-    print("❌ ESP MATI")
-end
+-- ==============================================
+-- SIMPAN KE GLOBAL (VERSI PALING AMAN)
+-- ==============================================
+_G.espPlayer = {
+    Start = function()
+        print("✅ ESP AKTIF")
+    end,
+    Stop = function()
+        print("❌ ESP MATI")
+    end
+}
 
 return _G.espPlayer
