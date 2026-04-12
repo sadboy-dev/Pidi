@@ -22,16 +22,6 @@ local function enableSpectatorFeatures()
     EspPlayer.On()
 end
 
-local function disableSpectatorFeatures()
-    if not isSpectatorMode then return end
-    isSpectatorMode = false
-
-    print("🔌 DEACTIVATING: SPECTATOR FEATURES")
-    IpadView.Off()
-    Crosshair.Off()
-    EspPlayer.Off()
-end
-
 -- DETEKSI ROLE
 local function onUpdate()
     local data = _G.RoleData
