@@ -1,12 +1,9 @@
--- LOADER.LUA - VERSI FIX & FORCE UPDATE
+-- LOADER.LUA - VERSI FIX GLOBAL
 if _G.__LOADER then return end
 _G.__LOADER = true
 
--- TAMBAH INI BIAR SELALU DOWNLOAD VERSI BARU (BYPASS CACHE DELTA)
-local cacheBuster = "?t=" .. os.time()
-
--- LINK YANG BENAR (PASTI BISA)
 local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
+local cacheBuster = "?v="..os.time() -- Paksa download baru
 
 local files = {
     "getRole.lua",
@@ -20,18 +17,21 @@ print("====================================")
 print("📂 LOADER: MEMUAT SEMUA MODULES...")
 print("====================================")
 
+_G.Modules = {} -- Tempat nyimpen semua script
+
 local function loadModule(filename)
-    local link = BASE_URL .. filename .. cacheBuster -- Tambah pembeda waktu
+    local link = BASE_URL .. filename .. cacheBuster
     local success, err = pcall(function()
         local code = game:HttpGet(link)
-        loadstring(code)()
+        -- Jalankan dan simpan hasilnya ke _G.Modules
+        _G.Modules[filename] = loadstring(code)()
     end)
 
-    if success then
+    if success and _G.Modules[filename] then
         print("✅ BERHASIL: " .. filename)
     else
         warn("❌ GAGAL: " .. filename)
-        print("🔗 Link: " .. link) -- Cek link ini di browser kalau error
+        print("⚠️ Error: " .. tostring(err))
     end
 end
 
