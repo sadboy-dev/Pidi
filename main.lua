@@ -7,21 +7,15 @@ _G.__MAIN = true
 local lastStatus = nil
 local featuresLoaded = false
 
--- BASE URL (SAMA DENGAN DI LOADER)
-local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules"
+local LINK_BOOSTFPS = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/boostFps"
+local LINK_IPADVIEW = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/ipadView"
+local LINK_CROSSHAIR = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/crosshair.lua"
+local LINK_ESPPLAYER = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/espPlayer.lua"
 
--- FUNGSI MEMANGGIL FILE
-local function loadScript(name)
-    local link = BASE_URL .. "/" .. name .. ".lua"
-    local code = game:HttpGet(link)
-    local func = loadstring(code)
-    if func then
-        func()
-        print("✅ LOADED: " .. name)
-    else
-        warn("❌ GAGAL LOAD: " .. name)
-    end
-end
+local boostFps = loadstring(game:HttpGet(LINK_BOOSTFPS))
+local ipadView = loadstring(game:HttpGet(LINK_IPADVIEW))
+local crosshair = loadstring(game:HttpGet(LINK_CROSSHAIR))
+local espPlayer = loadstring(game:HttpGet(LINK_espPlayer))
 
 --------------------------------------------------
 -- LOGIKA UTAMA
@@ -46,10 +40,10 @@ local function onUpdate()
         featuresLoaded = true
         print("🚀 MEMUAT FITUR ALL ROLE...")
         
-        loadScript("boostFps")
-        loadScript("ipadView")
-        loadScript("crosshair")
-        loadScript("espPlayer")
+        loadstring(game:HttpGet(LINK_BOOSTFPS))
+        loadstring(game:HttpGet(LINK_IPADVIEW))
+        loadstring(game:HttpGet(LINK_CROSSHAIR))
+        loadstring(game:HttpGet(LINK_espPlayer))
     end
 end
 
