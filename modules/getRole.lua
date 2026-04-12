@@ -1,18 +1,15 @@
--- getRole.lua
-
-if _G.RoleData then return end
+-- modules/getRole.lua
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
-_G.RoleData = {
+local UpdateEvent = Instance.new("BindableEvent")
+
+local RoleData = {
     TeamName = "",
     IsLobby = false
 }
-
-local UpdateEvent = Instance.new("BindableEvent")
-_G.RoleUpdate = UpdateEvent.Event
 
 local function getTeamName(plr)
     if plr.Team then
@@ -27,14 +24,17 @@ RunService.Heartbeat:Connect(function()
     local team = getTeamName(player)
     local lobby = (team == "spectator")
 
-    _G.RoleData.TeamName = team
-    _G.RoleData.IsLobby = lobby
+    RoleData.TeamName = team
+    RoleData.IsLobby = lobby
 
     if last ~= lobby or last ~= team then
         last = lobby
         UpdateEvent:Fire()
-        print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
+        print("📡 [getRole] Update ->", team, "| Lobby:", lobby)
     end
 end)
 
-print("✅ [GETROLE] LOADED!")
+return {
+    Data = RoleData,
+    OnUpdate = UpdateEvent.Event
+}
