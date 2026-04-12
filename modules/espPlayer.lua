@@ -3,8 +3,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- AMBIL FUNGSI DARI GLOBAL
-local getRole = _G.getRole
+-- ❌ HAPUS BARIS INI: local getRole = _G.getRole
+-- ✅ KITA AMBIL DI DALAM LOOP AJA
 
 -- ==============================================
 -- FUNGSI BUAT BOX
@@ -23,7 +23,7 @@ local function applyESP(plr)
         h.FillTransparency = 0.5
         h.OutlineTransparency = 0
         h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        h.FillColor = Color3.new(1,1,1) -- Default Putih
+        h.FillColor = Color3.fromRGB(255,255,255) -- Default PUTIH
         h.Parent = char
     end
 
@@ -41,17 +41,16 @@ end
 -- LOOP UPDATE WARNA
 -- ==============================================
 RunService.RenderStepped:Connect(function()
+    -- ✅ AMBIL getRole DISINI SETIAP KALI
+    local getRole = _G.getRole
+
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                -- PAKAI PROTEKSI ERROR
-                local success, role = pcall(function()
-                    return getRole(plr)
-                end)
-
-                -- SET WARNA
-                if success and role then
+                if getRole then
+                    local role = getRole(plr)
+                    
                     if role == "KILLER" then
                         h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
                     elseif role == "SURVIVOR" then
@@ -60,8 +59,7 @@ RunService.RenderStepped:Connect(function()
                         h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
                     end
                 else
-                    -- Kalau gagal baca role, warna PUTIH
-                    h.FillColor = Color3.fromRGB(255, 255, 255)
+                    h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
                 end
             end
         end
@@ -79,13 +77,13 @@ Players.PlayerAdded:Connect(applyESP)
 -- ==============================================
 -- SIMPAN KE GLOBAL
 -- ==============================================
-local espModule = {}
-function espModule.Start()
-    print("✅ ESP AKTIF")
-end
-function espModule.Stop()
-    print("❌ ESP MATI")
-end
+_G.espPlayer = {
+    Start = function()
+        print("✅ ESP AKTIF")
+    end,
+    Stop = function()
+        print("❌ ESP MATI")
+    end
+}
 
-_G.espPlayer = espModule
-return espModule
+return _G.espPlayer
