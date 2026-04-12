@@ -2,11 +2,20 @@
 if _G.__MAIN then return end
 _G.__MAIN = true
 
--- PANGGIL MODUL
-local getRole = require(script.Parent.modules.getRole)
-local espPlayer = require(script.Parent.modules.espPlayer)
-local boostFps = require(script.Parent.modules.boostFps)
-local ipadView = require(script.Parent.modules.ipadView) -- Panggil ipadView
+-- TUNGGU LOADER SELESAI
+repeat task.wait() until _G.Modules ~= nil
+task.wait(0.5)
+
+-- AMBIL DARI GLOBAL (BUKAN REQUIRE)
+local getRole = _G.Modules["getRole.lua"]
+local espPlayer = _G.Modules["espPlayer.lua"]
+local boostFps = _G.Modules["boostFps.lua"]
+local ipadView = _G.Modules["ipadView.lua"]
+
+-- CEK APAKAH ESP PLAYER KETEMU
+if not espPlayer then
+    error("❌ ESP PLAYER TIDAK TERBACA! Cek kembali link & file GitHub.")
+end
 
 local lastState = nil
 
@@ -16,17 +25,13 @@ local function updateFeatures()
 
     -- ==============================================
     -- ⚡ BOOST FPS & 📱 IPAD VIEW: ALL ROLE
-    -- JALAN SETIAP KALI ROLE GANTI / TERDETEKSI
     -- ==============================================
-    print("⚡ BOOST FPS: DIAKTIFKAN ULANG...")
-    boostFps()
-    
-    print("📱 IPAD VIEW: DIAKTIFKAN ULANG...")
-    ipadView()
+    if boostFps then boostFps() end
+    if ipadView then ipadView() end
+
     -- ==============================================
-
-
-    -- ATURAN FITUR LAIN (ESP, DLL)
+    -- 🎯 ESP & CROSSHAIR: HANYA BUKAN SPECTATOR
+    -- ==============================================
     local shouldEnable = (myRole ~= "SPECTATOR")
 
     if shouldEnable and lastState ~= true then
