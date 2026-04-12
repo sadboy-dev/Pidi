@@ -39,6 +39,6 @@ RunService.Heartbeat:Connect(function()
         lastTeam = team
         
         UpdateEvent:Fire()
-        print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
+        print("📡 [GETROLE] Update ->", team)
     end
 end)
