@@ -1,38 +1,39 @@
 -- boostFps.lua
-local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
 local Workspace = game:GetService("Workspace")
 
-local function boost()
+--------------------------------------------------
+-- ⚡ BOOST FPS
+--------------------------------------------------
+local function startBoost()
     print("⚡ BOOST FPS DIAKTIFKAN")
     
     -- Setting Grafik
-    settings().Rendering.QualityLevel = 1
-    settings().Rendering.FramerateCap = 60
+    pcall(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    end)
 
-    -- HAPUS EFEK YANG BERAT (TAPI TETAP TERANG)
+    -- Matikan Bayangan
+    Lighting.GlobalShadows = false
+
+    -- Hapus Efek & Ubah Material
     for _, v in pairs(workspace:GetDescendants()) do
         -- Matikan efek berat
         if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
             v.Enabled = false
         end
         
-        -- Light: Kita matikan cuma yang bukan bawaan map
-        -- Supaya suasana tetap terang
-        if v:IsA("Light") and v.Name ~= "DefaultLight" then
-            v.Enabled = false
+        -- Ubah semua jadi material Plastic
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.Plastic
         end
-    end
-
-    -- ✅ PASTIKAN TETAP TERANG
-    if Workspace:FindFirstChild("Terrain") then
-        Workspace.Terrain.WaterWaveSize = 0 -- Biar air gak berat
     end
 end
 
 -- Jalankan langsung saat load
-boost()
+startBoost()
 
--- Simpan ke Global supaya bisa dipanggil lagi
-_G.boostFps = boost
+-- Simpan ke Global supaya bisa dipanggil ulang
+_G.boostFps = startBoost
 
-return boost
+return startBoost
