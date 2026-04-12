@@ -1,5 +1,4 @@
--- main.lua
-
+-- MAIN.LUA
 if _G.__MAIN then return end
 _G.__MAIN = true
 
@@ -11,11 +10,6 @@ local LINK_BOOSTFPS = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/mo
 local LINK_IPADVIEW = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/ipadView"
 local LINK_CROSSHAIR = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/crosshair.lua"
 local LINK_ESPPLAYER = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/espPlayer.lua"
-
-local boostFps = loadstring(game:HttpGet(LINK_BOOSTFPS))
-local ipadView = loadstring(game:HttpGet(LINK_IPADVIEW))
-local crosshair = loadstring(game:HttpGet(LINK_CROSSHAIR))
-local espPlayer = loadstring(game:HttpGet(LINK_espPlayer))
 
 --------------------------------------------------
 -- LOGIKA UTAMA
@@ -40,10 +34,20 @@ local function onUpdate()
         featuresLoaded = true
         print("🚀 MEMUAT FITUR ALL ROLE...")
         
-        loadstring(game:HttpGet(LINK_BOOSTFPS))
-        loadstring(game:HttpGet(LINK_IPADVIEW))
-        loadstring(game:HttpGet(LINK_CROSSHAIR))
-        loadstring(game:HttpGet(LINK_espPlayer))
+        -- KITA COBA DOWNLOAD, KALAU ERROR DILEWATI
+        local function safeLoad(link, name)
+            local success, err = pcall(function()
+                loadstring(game:HttpGet(link))()
+            end)
+            if not success then
+                print("⚠️  Gagal load: " .. name .. " (Link mati/404)")
+            end
+        end
+
+        safeLoad(LINK_BOOSTFPS, "Boost FPS")
+        safeLoad(LINK_IPADVIEW, "iPad View")
+        safeLoad(LINK_CROSSHAIR, "Crosshair")
+        safeLoad(LINK_ESPPLAYER, "ESP Player")
     end
 end
 
@@ -51,4 +55,3 @@ end
 repeat task.wait() until _G.RoleData and _G.RoleUpdate
 _G.RoleUpdate:Connect(onUpdate)
 task.wait(0.1)
-onUpdate()
