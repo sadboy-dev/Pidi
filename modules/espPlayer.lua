@@ -1,9 +1,9 @@
--- espPlayer.lua - VERSI FINAL STABIL
+-- espPlayer.lua - VERSI WARNA PASTI MUNCUL
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- AMBIL FUNGSI DARI GLOBAL (PASTI ADA)
+-- AMBIL FUNGSI DARI GLOBAL
 local getRole = _G.getRole
 
 -- ==============================================
@@ -15,16 +15,15 @@ local function applyESP(plr)
     local function setup(char)
         if not char then return end
 
-        -- Hapus lama
         local old = char:FindFirstChild("ESP")
         if old then old:Destroy() end
 
-        -- Buat baru
         local h = Instance.new("Highlight")
         h.Name = "ESP"
         h.FillTransparency = 0.5
         h.OutlineTransparency = 0
         h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.FillColor = Color3.new(1,1,1) -- Default Putih
         h.Parent = char
     end
 
@@ -46,15 +45,23 @@ RunService.RenderStepped:Connect(function()
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                local role = getRole(plr)
-                
-                -- WARNA SESUAI ROLE
-                if role == "KILLER" then
-                    h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
-                elseif role == "SURVIVOR" then
-                    h.FillColor = Color3.fromRGB(0, 170, 255) -- 🔵 BIRU
+                -- PAKAI PROTEKSI ERROR
+                local success, role = pcall(function()
+                    return getRole(plr)
+                end)
+
+                -- SET WARNA
+                if success and role then
+                    if role == "KILLER" then
+                        h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
+                    elseif role == "SURVIVOR" then
+                        h.FillColor = Color3.fromRGB(0, 170, 255) -- 🔵 BIRU
+                    else
+                        h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
+                    end
                 else
-                    h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
+                    -- Kalau gagal baca role, warna PUTIH
+                    h.FillColor = Color3.fromRGB(255, 255, 255)
                 end
             end
         end
@@ -70,7 +77,7 @@ end
 Players.PlayerAdded:Connect(applyESP)
 
 -- ==============================================
--- SIMPAN KE GLOBAL (VERSI PALING AMAN)
+-- SIMPAN KE GLOBAL
 -- ==============================================
 local espModule = {}
 function espModule.Start()
