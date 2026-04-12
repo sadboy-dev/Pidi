@@ -3,37 +3,47 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- ✅ YANG INI SUDAH DIPERBAIKI, GAK PAKE REQUIRE LAGI
+-- ✅ INI YANG KURANG! WAJIB ADA
 local getRole = _G.getRole
 
 local esp = {}
 local connection = nil
 
-local function applyESP(char)
-    if not char then return end
-    local old = char:FindFirstChild("ESP")
-    if old then old:Destroy() end
+local function applyESP(plr)
+    if plr == player then return end
 
-    local h = Instance.new("Highlight")
-    h.Name = "ESP"
-    h.FillTransparency = 0.5
-    h.OutlineTransparency = 0
-    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    h.Parent = char
+    local function setup(char)
+        if not char then return end
+
+        local old = char:FindFirstChild("ESP")
+        if old then old:Destroy() end
+
+        local h = Instance.new("Highlight")
+        h.Name = "ESP"
+        h.FillTransparency = 0.5
+        h.OutlineTransparency = 0
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.Parent = char
+    end
+
+    if plr.Character then
+        setup(plr.Character)
+    end
+
+    plr.CharacterAdded:Connect(function(c)
+        task.wait(0.5)
+        setup(c)
+    end)
 end
 
 function esp.Start()
     print("✅ ESP AKTIF")
-    
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= player and plr.Character then
-            applyESP(plr.Character)
-        end
-        plr.CharacterAdded:Connect(function(c)
-            task.wait(0.1)
-            applyESP(c)
-        end)
+
+    for _, p in pairs(Players:GetPlayers()) do
+        applyESP(p)
     end
+
+    Players.PlayerAdded:Connect(applyESP)
 
     connection = RunService.RenderStepped:Connect(function()
         for _, plr in pairs(Players:GetPlayers()) do
@@ -66,6 +76,5 @@ function esp.Stop()
     end
 end
 
--- Simpan ke Global biar main.lua bisa ambil
 _G.espPlayer = esp
 return esp
