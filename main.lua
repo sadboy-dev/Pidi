@@ -2,45 +2,41 @@
 if _G.__MAIN then return end
 _G.__MAIN = true
 
--- TUNGGU SEBENTAR BIAR LOADER SELESAI DOWNLOAD
-repeat task.wait() until _G.getRole and _G.espPlayer
+-- TUNGGU SEMUA MODUL SIAP
+repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView
 task.wait(0.5)
 
--- AMBIL FUNGSINYA DARI GLOBAL
 local getRole = _G.getRole
 local espPlayer = _G.espPlayer
 local boostFps = _G.boostFps
 local ipadView = _G.ipadView
 
-local lastState = nil
+local isActive = false
 
 local function updateFeatures()
     local myRole = getRole(game.Players.LocalPlayer)
     print("🎭 ROLE KAMU: " .. myRole)
 
     -- ==============================================
-    -- ⚡ BOOST FPS & 📱 IPAD VIEW: ALL ROLE
+    -- ✅ ALL ROLE: NYALA TERUS GAK PEDULI ROLE APA
     -- ==============================================
+    -- Boost FPS
     if boostFps then boostFps() end
+    
+    -- iPad View
     if ipadView then ipadView() end
-
-    -- ==============================================
-    -- 🎯 ESP: HANYA BUKAN SPECTATOR
-    -- ==============================================
-    local shouldEnable = true -- Paksa nyala semua role
-
-    if shouldEnable and lastState ~= true then
-        print("🚀 MENGAKTIFKAN FITUR GAME...")
-        espPlayer.Start()
-        lastState = true
-    elseif not shouldEnable and lastState ~= false then
-        print("🔌 MENONAKTIFKAN FITUR GAME (SPECTATOR)...")
-        espPlayer.Stop()
-        lastState = false
+    
+    -- ESP (SEKARANG JADI ALL ROLE JUGA!)
+    if not isActive then
+        print("🚀 MENGAKTIFKAN SEMUA FITUR (ALL ROLE)...")
+        espPlayer:Start()
+        isActive = true
     end
+    -- ==============================================
+
 end
 
--- CEK ROLE TERUS MENERUS
+-- CEK TERUS MENERUS
 while task.wait(0.5) do
     updateFeatures()
 end
