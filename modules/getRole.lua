@@ -1,5 +1,5 @@
 -- getRole.lua
--- Jangan diubah, ini yang deteksi team
+-- VERSI UNTUK LOADER SIMPLE
 
 if _G.RoleData then return end
 
@@ -22,19 +22,27 @@ local function getTeamName(plr)
     return ""
 end
 
-local last = nil
+local lastStatus = nil
+local lastTeam = nil
 
 RunService.Heartbeat:Connect(function()
     local team = getTeamName(player)
-    local lobby = (team == "spectator")
+    local isLobbyNow = (team == "spectator")
 
     _G.RoleData.TeamName = team
-    _G.RoleData.IsLobby = lobby
+    _G.RoleData.IsLobby = isLobbyNow
 
-    if last ~= lobby or last ~= team then
-        last = lobby
+    -- PRINT HANYA KALAU BERUBAH
+    if lastStatus ~= isLobbyNow or lastTeam ~= team then
+        lastStatus = isLobbyNow
+        lastTeam = team
         UpdateEvent:Fire()
-        print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
+        
+        if isLobbyNow then
+            print("📡 [getRole] STATUS: LOBBY")
+        else
+            print("📡 [getRole] STATUS: INGAME | ROLE:", team)
+        end
     end
 end)
 
