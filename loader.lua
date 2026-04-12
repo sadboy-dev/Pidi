@@ -1,12 +1,11 @@
 -- LOADER.LUA
--- DOWNLOAD & LOAD SEMUA MODULES DARI GITHUB
+-- LINK YANG BENAR SESUAI GITHUB
 
 if _G.__LOADER then return end
 _G.__LOADER = true
 
 local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
 
--- DAFTAR FILE YANG AKAN DIAMBIL
 local files = {
     "getRole.lua",
     "boostFps.lua",
@@ -19,7 +18,6 @@ print("====================================")
 print("📂 LOADER: MEMUAT SEMUA MODULES...")
 print("====================================")
 
--- FUNGSI AMAN DOWNLOAD & JALANKAN
 local function loadModule(filename)
     local link = BASE_URL .. filename
     local success, err = pcall(function()
@@ -34,10 +32,9 @@ local function loadModule(filename)
     end
 end
 
--- LOOPING DOWNLOAD SEMUA FILE
 for _, file in pairs(files) do
     loadModule(file)
-    task.wait(0.05) -- jeda dikit biar tidak terlalu cepat
+    task.wait(0.05)
 end
 
 print("====================================")
