@@ -13,4 +13,4 @@ print("====================================")
 -- JALANKAN SEMUA
 _G.boostFps()
 _G.ipadView()
-_G.espPlayer:Start()
+_G.espPlayer.Start() -- PAKAI TITIK SATU (.)
