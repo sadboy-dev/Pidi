@@ -1,31 +1,58 @@
 -- main.lua
 
-if _G.__LOADER_MAIN then return end
-_G.__LOADER_MAIN = true
+if _G.__MAIN then return end
+_G.__MAIN = true
 
--- Tunggu sampai data dan event siap
-repeat task.wait() until _G.RoleData and _G.RoleUpdate
+print("✅ [MAIN] SCRIPT START!")
 
--- Fungsi ini JALAN OTOMATIS kalau team/status berubah
-local function onStatusChanged()
-    local isLobby = _G.RoleData.IsLobby
-    local team = _G.RoleData.TeamName
+-- LOAD SEMUA MODULE FITUR
+local IpadView = require(script.modules.ipadView)
+local Crosshair = require(script.modules.crosshair)
+local EspPlayer = require(script.modules.espPlayer)
 
-    if isLobby then
-        print("📡 Tim: " .. team)
-        -- Matikan fitur di sini kalau perlu
+local isSpectatorMode = false
+
+local function enableSpectatorFeatures()
+    if isSpectatorMode then return end
+    isSpectatorMode = true
+
+    print("🔌 ACTIVATING: SPECTATOR FEATURES")
+    IpadView.On()
+    Crosshair.On()
+    EspPlayer.On()
+end
+
+local function disableSpectatorFeatures()
+    if not isSpectatorMode then return end
+    isSpectatorMode = false
+
+    print("🔌 DEACTIVATING: SPECTATOR FEATURES")
+    IpadView.Off()
+    Crosshair.Off()
+    EspPlayer.Off()
+end
+
+-- DETEKSI ROLE
+local function onUpdate()
+    local data = _G.RoleData
+    local team = data.TeamName
+    local isLobby = data.IsLobby
+
+    local isSpec = isLobby or team == "spectator" or team == ""
+
+    if isSpec then
+        print("📍 STATUS: LOBBY / SPECTATOR")
+        enableSpectatorFeatures()
     else
-        print("🎮 Tim: " .. team)
-        -- Jalanin fitur Aimbot/ESP di sini
+        print("📍 STATUS: INGAME | ROLE: " .. team)
+        disableSpectatorFeatures()
     end
 end
 
--- PASANG LISTENER
--- Sekarang main.lua tidak perlu ngecek terus menerus
--- Cukup tunggu dikabari sama getRole.lua
-_G.RoleUpdate:Connect(onStatusChanged)
+-- JALANKAN
+repeat task.wait() until _G.RoleData and _G.RoleUpdate
+_G.RoleUpdate:Connect(onUpdate)
+task.wait(0.1)
+onUpdate()
 
--- Cek sekali saat pertama jalan
-onStatusChanged()
-
-print("✅ Main Script Ready!")
+print("✅ [MAIN] SYSTEM READY!")
