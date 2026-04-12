@@ -1,9 +1,8 @@
 local autogene = {}
 
-function autogene.Start(getRole)
+function autogene.Start()
     local Players = game:GetService("Players")
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local RunService = game:GetService("RunService")
     local player = Players.LocalPlayer
 
     local remote = ReplicatedStorage:WaitForChild("Remotes", 8)
@@ -17,11 +16,11 @@ function autogene.Start(getRole)
         local char = player.Character
         local root = char and char:FindFirstChild("HumanoidRootPart")
         if not root then return false end
-        -- Cek jarak ke generator (lebih akurat)
+
         for _, obj in ipairs(workspace:GetDescendants()) do
-            if obj.Name:match("Generator") or obj.Name == "Gen" then
+            if obj.Name:match("Generator") or obj.Name:lower():find("gen") then
                 local point = obj:FindFirstChild("GeneratorPoint1") or obj.PrimaryPart
-                if point and (root.Position - point.Position).Magnitude < 7 then
+                if point and (root.Position - point.Position).Magnitude < 8 then
                     return true
                 end
             end
@@ -43,7 +42,6 @@ function autogene.Start(getRole)
 
             if not skillGui then continue end
 
-            -- Deteksi yang aman (tidak pakai FindFirstChildWhichIsA sembarangan)
             local check = skillGui:FindFirstChild("Check") 
                        or skillGui:FindFirstChild("Prompt") 
                        or skillGui:FindFirstChild("Area")
@@ -66,24 +64,57 @@ function autogene.Start(getRole)
     end
 
     local function stopAutoGene()
+        if not isActive then return end
         isActive = false
         print("AUTO GENE DIMATIKAN")
     end
 
-    -- Monitor role
+    -- ==================== DETEKSI ROLE DARI PESAN ====================
+    local function onMessageAdded(msg)
+        if typeof(msg) ~= "string" then return end
+
+        local lowerMsg = msg:lower()
+
+        if lowerMsg:find("survivors") or lowerMsg:find("survivor") then
+            startAutoGene()
+        elseif lowerMsg:find("killer") then
+            stopAutoGene()
+        elseif lowerMsg:find("spectator") then
+            stopAutoGene()
+        end
+    end
+
+    -- Hook ke pesan sistem (TextChatService atau legacy Chat)
     task.spawn(function()
-        while true do
-            task.wait(0.5)
-            local role = getRole and getRole() or "UNKNOWN"
-            if role == "SURVIVOR" then
-                startAutoGene()
-            else
-                stopAutoGene()
+        -- TextChatService (Roblox baru)
+        local success, TextChatService = pcall(function()
+            return game:GetService("TextChatService")
+        end)
+
+        if success and TextChatService then
+            if TextChatService:FindFirstChild("MessageReceived") then
+                TextChatService.MessageReceived:Connect(function(message)
+                    onMessageAdded(message.Text or "")
+                end)
             end
+        end
+
+        -- Fallback ke PlayerGui.Chat (legacy)
+        player:WaitForChild("PlayerGui"):WaitForChild("Chat", 5).ChildAdded:Connect(function(child)
+            if child:IsA("TextLabel") or child:IsA("TextButton") then
+                onMessageAdded(child.Text)
+            end
+        end)
+    end)
+
+    -- Fallback awal (kalau pesan tidak muncul)
+    task.delay(3, function()
+        if not isActive then
+            print("AutoGene fallback: menunggu pesan role...")
         end
     end)
 
-    print("AutoGene v3 loaded (error ImageLabel sudah diperbaiki)")
+    print("AutoGene v5 loaded - Deteksi role via pesan chat (ringan)")
 end
 
 return autogene
