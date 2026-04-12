@@ -1,57 +1,29 @@
--- MAIN.LUA
 if _G.__MAIN then return end
 _G.__MAIN = true
 
--- VARIABEL PENGAMAN
-local lastStatus = nil
-local featuresLoaded = false
+-- PANGGIL MODUL
+local getRole = require(script.Parent.modules.getRole)
+local espPlayer = require(script.Parent.modules.espPlayer)
 
-local LINK_BOOSTFPS = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/boostFps"
-local LINK_IPADVIEW = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/ipadView"
-local LINK_CROSSHAIR = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/crosshair.lua"
-local LINK_ESPPLAYER = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/espPlayer.lua"
+local lastState = nil -- Biar tidak spam on/off
 
---------------------------------------------------
--- LOGIKA UTAMA
---------------------------------------------------
-local function onUpdate()
-    local data = _G.RoleData
-    local isLobby = data.IsLobby
-    local team = data.TeamName
+local function updateFeatures()
+    local myRole = getRole(game.Players.LocalPlayer) -- Cek role DIRI SENDIRI
+    
+    -- === ATURAN NYA ===
+    -- Contoh: ESP hanya nyala kalau kamu KILLER atau SURVIVOR, mati kalau SPECTATOR
+    local shouldEnable = (myRole == "KILLER" or myRole == "SURVIVOR")
 
-    -- PRINT STATUS HANYA KALAU BERUBAH
-    if lastStatus ~= isLobby then
-        lastStatus = isLobby
-        if isLobby then
-            print("📍 STATUS: LOBBY / SPECTATOR")
-        else
-            print("📍 STATUS: INGAME | ROLE: " .. team)
-        end
-    end
-
-    -- LOAD SEMUA FITUR SEKALI SAJA
-    if not featuresLoaded then
-        featuresLoaded = true
-        print("🚀 MEMUAT FITUR ALL ROLE...")
-        
-        -- KITA COBA DOWNLOAD, KALAU ERROR DILEWATI
-        local function safeLoad(link, name)
-            local success, err = pcall(function()
-                loadstring(game:HttpGet(link))()
-            end)
-            if not success then
-                print("⚠️  Gagal load: " .. name .. " (Link mati/404)")
-            end
-        end
-
-        safeLoad(LINK_BOOSTFPS, "Boost FPS")
-        safeLoad(LINK_IPADVIEW, "iPad View")
-        safeLoad(LINK_CROSSHAIR, "Crosshair")
-        safeLoad(LINK_ESPPLAYER, "ESP Player")
+    if shouldEnable and lastState ~= true then
+        espPlayer.Start()
+        lastState = true
+    elseif not shouldEnable and lastState ~= false then
+        espPlayer.Stop()
+        lastState = false
     end
 end
 
--- JALANKAN
-repeat task.wait() until _G.RoleData and _G.RoleUpdate
-_G.RoleUpdate:Connect(onUpdate)
-task.wait(0.1)
+-- JALANKAN TERUS MENERUS
+while task.wait(0.5) do
+    updateFeatures()
+end
