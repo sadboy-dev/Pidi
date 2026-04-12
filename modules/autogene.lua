@@ -1,35 +1,41 @@
 local autogene = {}
 
-function autogene.Start(getRole)
+function autogene.Start(getRoleCallback)
     local Players = game:GetService("Players")
     local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
     local player = Players.LocalPlayer
     local gui = player:WaitForChild("PlayerGui")
 
+    -- Sesuaikan path Remote sesuai game kamu
     local remote = ReplicatedStorage:WaitForChild("Remotes")
         :WaitForChild("Generator")
         :WaitForChild("SkillCheckResultEvent")
 
-    task.spawn(function()
-        local lastFire = 0
+    local lastFire = 0
 
+    task.spawn(function()
         while true do
             task.wait(0.05)
 
-            if not getRole or getRole() ~= "SURVIVOR" then continue end
+            -- Cek role dulu
+            if not getRoleCallback or getRoleCallback() ~= "SURVIVOR" then 
+                continue 
+            end
 
+            -- Cek apakah Skill Check muncul
             local g = gui:FindFirstChild("SkillCheckPromptGui")
             if not g then continue end
 
             local check = g:FindFirstChild("Check")
             if not (check and check.Visible) then continue end
 
-            -- anti spam biar tidak di ignore server
+            -- Anti spam biar tidak di-ignore server
             if tick() - lastFire < 0.07 then continue end
             lastFire = tick()
 
-            remote:FireServer("success",1)
+            -- Kirim success ke server
+            remote:FireServer("success", 1)
             check.Visible = false
         end
     end)
