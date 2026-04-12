@@ -1,10 +1,13 @@
---------------------------------------------------
--- ⚡ AUTO PERFECT GENERATOR (FIX 2 PARAMETER + DEBUG)
---------------------------------------------------
-task.spawn(function()
+local autogene = {}
+
+function autogene.Start()
+    local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+    local player = Players.LocalPlayer
     local gui = player:WaitForChild("PlayerGui")
-    
-    -- Tunggu remote load dengan aman
+
+    -- 🔐 CARI REMOTE DENGAN AMAN
     local remote = nil
     while not remote do
         pcall(function()
@@ -12,33 +15,34 @@ task.spawn(function()
                 :WaitForChild("Generator", 1)
                 :WaitForChild("SkillCheckResultEvent", 1)
         end)
-        task.wait()
+        task.wait(0.1)
     end
-    print("✅ Remote Found!")
+    print("✅ Remote Connected!")
 
     local lastFire = 0
 
-    while true do
-        task.wait(0.05) -- ⬅️ Dipercepat dari 0.1 jadi 0.05
+    task.spawn(function()
+        while true do
+            task.wait(0.05) -- Dipercepat
 
-        if ROLE ~= "SURVIVOR" then continue end
+            local g = gui:FindFirstChild("SkillCheckPromptGui")
+            if g then
+                local check = g:FindFirstChild("Check")
+                if check and check.Visible then
+                    
+                    -- Anti Spam
+                    if tick() - lastFire < 0.1 then continue end
+                    lastFire = tick()
 
-        local g = gui:FindFirstChild("SkillCheckPromptGui")
-        if g then
-            local check = g:FindFirstChild("Check")
-            if check and check.Visible then
-                
-                -- Anti Spam
-                if tick() - lastFire < 0.1 then continue end
-                lastFire = tick()
-
-                -- 🔧 COBA 2 PARAMETER (Versi Paling Aman)
-                remote:FireServer("success", 1) 
-                -- Alternatif kalau tidak work: remote:FireServer("great", 1)
-                
-                check.Visible = false
-                print("🎯 Auto Perfect Triggered!")
+                    -- ✅ PAKAI 2 PARAMETER
+                    remote:FireServer("success", 1)
+                    
+                    check.Visible = false
+                    print("🎯 AUTO PERFECT!")
+                end
             end
         end
-    end
-end)
+    end)
+end
+
+return autogene
