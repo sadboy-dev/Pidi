@@ -2,6 +2,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
 local getRole = _G.getRole
@@ -12,14 +13,7 @@ local getRole = _G.getRole
 task.spawn(function()
     local playerGui = player:WaitForChild("PlayerGui")
 
-    -- Tunggu Remote Event
-    local skillRemote = nil
-    while not skillRemote do
-        skillRemote = ReplicatedStorage:FindFirstChild("Remotes")
-        and ReplicatedStorage.Remotes:FindFirstChild("Generator")
-        and ReplicatedStorage.Remotes.Generator:FindFirstChild("SkillCheckResultEvent")
-        task.wait(0.1)
-    end
+    local skillRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Generator"):WaitForChild("SkillCheckResultEvent")
 
     local lastGenPoint = nil
     local lastGenModel = nil
@@ -47,7 +41,7 @@ task.spawn(function()
                 if point then
                     local dist = (root.Position - point.Position).Magnitude
                     if dist < closestDist then
-                        closestDist = distance
+                        closestDist = dist -- ✅ DIPERBAIKI: dist BUKAN distance
                         closestGen = gen
                         closestPoint = point
                     end
@@ -57,15 +51,11 @@ task.spawn(function()
         return closestGen, closestPoint, closestDist
     end
 
-    -- LOOP UTAMA
     while true do
         task.wait(0.1)
 
-        -- ✅ HANYA JALAN KALAU SURVIVOR
-        local myRole = getRole()
-        if myRole ~= "SURVIVOR" then 
-            continue 
-        end
+        -- hanya jalan kalau survivor
+        if getRole(player) ~= "SURVIVOR" then continue end
 
         local char = player.Character
         local root = char and char:FindFirstChild("HumanoidRootPart")
@@ -78,16 +68,13 @@ task.spawn(function()
                 lastGenPoint = genPoint
             end
 
-            -- CEK APAKAH MUNCUL SKILL CHECK
             local gui = playerGui:FindFirstChild("SkillCheckPromptGui")
             if gui then
                 local check = gui:FindFirstChild("Check")
                 if check and check.Visible then
                     if lastGenPoint and (root.Position - lastGenPoint.Position).Magnitude < 6 then
-                        -- 🔥 KIRIM KE SERVER
                         skillRemote:FireServer("success", 1, lastGenModel, lastGenPoint)
                         check.Visible = false
-                        print("⚡ AUTO GEN: SUCCESS!")
                     end
                 end
             end
