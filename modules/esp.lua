@@ -1,10 +1,13 @@
+-- espPlayer.lua
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
-local getRole = require(script.Parent.getRole) -- Panggil getRole
+
+-- ✅ YANG INI SUDAH DIPERBAIKI, GAK PAKE REQUIRE LAGI
+local getRole = _G.getRole
 
 local esp = {}
-local connection = nil -- Untuk nyalakan/matikan loop
+local connection = nil
 
 local function applyESP(char)
     if not char then return end
@@ -22,7 +25,6 @@ end
 function esp.Start()
     print("✅ ESP AKTIF")
     
-    -- Terapkan ke player yang sudah ada
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= player and plr.Character then
             applyESP(plr.Character)
@@ -33,7 +35,6 @@ function esp.Start()
         end)
     end
 
-    -- Loop update warna
     connection = RunService.RenderStepped:Connect(function()
         for _, plr in pairs(Players:GetPlayers()) do
             if plr ~= player and plr.Character then
@@ -54,10 +55,9 @@ end
 function esp.Stop()
     print("❌ ESP MATI")
     if connection then
-        connection:Disconnect() -- Matikan loop
+        connection:Disconnect()
         connection = nil
     end
-    -- Hapus semua highlight
     for _, plr in pairs(Players:GetPlayers()) do
         if plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
@@ -66,4 +66,6 @@ function esp.Stop()
     end
 end
 
+-- Simpan ke Global biar main.lua bisa ambil
+_G.espPlayer = esp
 return esp
