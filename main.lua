@@ -5,31 +5,42 @@ _G.__MAIN = true
 -- PANGGIL MODUL
 local getRole = require(script.Parent.modules.getRole)
 local espPlayer = require(script.Parent.modules.espPlayer)
--- Tambahin yang lain kalau ada: local aimbot = ... dst
+local boostFps = require(script.Parent.modules.boostFps)
+local ipadView = require(script.Parent.modules.ipadView) -- Panggil ipadView
 
 local lastState = nil
 
 local function updateFeatures()
     local myRole = getRole(game.Players.LocalPlayer)
-    print("🎭 ROLE KAMU: " .. myRole) -- Cek di console
+    print("🎭 ROLE KAMU: " .. myRole)
+
+    -- ==============================================
+    -- ⚡ BOOST FPS & 📱 IPAD VIEW: ALL ROLE
+    -- JALAN SETIAP KALI ROLE GANTI / TERDETEKSI
+    -- ==============================================
+    print("⚡ BOOST FPS: DIAKTIFKAN ULANG...")
+    boostFps()
     
-    -- ATURAN: HANYA NYALA KALAU BUKAN SPECTATOR
+    print("📱 IPAD VIEW: DIAKTIFKAN ULANG...")
+    ipadView()
+    -- ==============================================
+
+
+    -- ATURAN FITUR LAIN (ESP, DLL)
     local shouldEnable = (myRole ~= "SPECTATOR")
 
     if shouldEnable and lastState ~= true then
-        print("🚀 MENGAKTIFKAN FITUR...")
+        print("🚀 MENGAKTIFKAN FITUR GAME...")
         espPlayer.Start()
-        -- aimbot.Start() dst
         lastState = true
     elseif not shouldEnable and lastState ~= false then
-        print("🔌 MENONAKTIFKAN FITUR (SPECTATOR)...")
+        print("🔌 MENONAKTIFKAN FITUR GAME (SPECTATOR)...")
         espPlayer.Stop()
-        -- aimbot.Stop() dst
         lastState = false
     end
 end
 
--- CEK TERUS MENERUS
+-- CEK ROLE TERUS MENERUS
 while task.wait(0.5) do
     updateFeatures()
 end
