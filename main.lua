@@ -2,20 +2,15 @@
 if _G.__MAIN then return end
 _G.__MAIN = true
 
--- TUNGGU LOADER SELESAI
-repeat task.wait() until _G.Modules ~= nil
+-- TUNGGU SEBENTAR BIAR LOADER SELESAI DOWNLOAD
+repeat task.wait() until _G.getRole and _G.espPlayer
 task.wait(0.5)
 
--- AMBIL DARI GLOBAL (BUKAN REQUIRE)
-local getRole = _G.Modules["getRole.lua"]
-local espPlayer = _G.Modules["espPlayer.lua"]
-local boostFps = _G.Modules["boostFps.lua"]
-local ipadView = _G.Modules["ipadView.lua"]
-
--- CEK APAKAH ESP PLAYER KETEMU
-if not espPlayer then
-    error("❌ ESP PLAYER TIDAK TERBACA! Cek kembali link & file GitHub.")
-end
+-- AMBIL FUNGSINYA DARI GLOBAL
+local getRole = _G.getRole
+local espPlayer = _G.espPlayer
+local boostFps = _G.boostFps
+local ipadView = _G.ipadView
 
 local lastState = nil
 
@@ -30,7 +25,7 @@ local function updateFeatures()
     if ipadView then ipadView() end
 
     -- ==============================================
-    -- 🎯 ESP & CROSSHAIR: HANYA BUKAN SPECTATOR
+    -- 🎯 ESP: HANYA BUKAN SPECTATOR
     -- ==============================================
     local shouldEnable = (myRole ~= "SPECTATOR")
 
