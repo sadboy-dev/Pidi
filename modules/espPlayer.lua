@@ -1,15 +1,7 @@
-local esp = {}
+local function applyESP(plr)
+    if plr == player then return end
 
-function esp.Start()
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-
-    local player = Players.LocalPlayer
-
-    --------------------------------------------------
-    -- APPLY ESP KE CHARACTER
-    --------------------------------------------------
-    local function applyESP(char)
+    local function setup(char)
         if not char then return end
 
         local old = char:FindFirstChild("ESP")
@@ -23,58 +15,33 @@ function esp.Start()
         h.Parent = char
     end
 
-    --------------------------------------------------
-    -- SETUP PLAYER
-    --------------------------------------------------
-    local function setup(plr)
-        if plr == player then return end
-
-        if plr.Character then
-            applyESP(plr.Character)
-        end
-
-        plr.CharacterAdded:Connect(function(char)
-            task.wait(0.2)
-            applyESP(char)
-        end)
+    if plr.Character then
+        setup(plr.Character)
     end
 
-    for _,p in pairs(Players:GetPlayers()) do
-        setup(p)
-    end
-    Players.PlayerAdded:Connect(setup)
-
-    --------------------------------------------------
-    -- UPDATE WARNA ROLE
-    --------------------------------------------------
-    RunService.RenderStepped:Connect(function()
-        for _,p in pairs(Players:GetPlayers()) do
-            if p ~= player and p.Character then
-                local h = p.Character:FindFirstChild("ESP")
-                if h then
-                    local role = "SPECTATOR"
-
-                    if p.Team then
-                        local n = p.Team.Name:lower()
-                        if n:find("killer") then
-                            role = "KILLER"
-                        elseif n:find("survivor") then
-                            role = "SURVIVOR"
-                        end
-                    end
-
-                    if role == "KILLER" then
-                        h.FillColor = Color3.fromRGB(255,0,0)
-                    elseif role == "SURVIVOR" then
-                        h.FillColor = Color3.fromRGB(0,170,255)
-                    else
-                        -- SPECTATOR
-                        h.FillColor = Color3.fromRGB(255,255,255)
-                    end
-                end
-            end
-        end
+    plr.CharacterAdded:Connect(function(c)
+        task.wait(0.5)
+        setup(c)
     end)
 end
 
-return esp
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local h = plr.Character:FindFirstChild("ESP")
+            if h then
+                local role = getRole(plr)
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255,0,0)
+                else
+                    h.FillColor = Color3.fromRGB(0,170,255)
+                end
+            end
+        end
+    end
+end)
+
+for _, p in pairs(Players:GetPlayers()) do
+    applyESP(p)
+end
+Players.PlayerAdded:Connect(applyESP)
