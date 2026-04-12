@@ -1,9 +1,9 @@
--- LOADER.LUA - VERSI FIX GLOBAL
+-- LOADER.LUA - VERSI ORI FIX
 if _G.__LOADER then return end
 _G.__LOADER = true
 
 local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
-local cacheBuster = "?v="..os.time() -- Paksa download baru
+local cacheBuster = "?v="..os.time() -- Paksa download baru biar gak cache
 
 local files = {
     "getRole.lua",
@@ -17,21 +17,17 @@ print("====================================")
 print("📂 LOADER: MEMUAT SEMUA MODULES...")
 print("====================================")
 
-_G.Modules = {} -- Tempat nyimpen semua script
-
 local function loadModule(filename)
     local link = BASE_URL .. filename .. cacheBuster
     local success, err = pcall(function()
         local code = game:HttpGet(link)
-        -- Jalankan dan simpan hasilnya ke _G.Modules
-        _G.Modules[filename] = loadstring(code)()
+        loadstring(code)() -- JALANKAN LANGSUNG
     end)
 
-    if success and _G.Modules[filename] then
+    if success then
         print("✅ BERHASIL: " .. filename)
     else
         warn("❌ GAGAL: " .. filename)
-        print("⚠️ Error: " .. tostring(err))
     end
 end
 
