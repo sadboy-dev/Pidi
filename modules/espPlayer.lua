@@ -3,7 +3,7 @@ _G.espPlayer = esp -- TAMBAH INI JUGA!
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
-local getRole = require(script.Parent.getRole) -- Panggil getRole
+local getRole = _G.getRole
 
 local esp = {}
 local connection = nil -- Untuk nyalakan/matikan loop
