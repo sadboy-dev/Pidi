@@ -3,11 +3,8 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- ✅ INI YANG KURANG! WAJIB ADA
+-- WAJIB ADA INI
 local getRole = _G.getRole
-
-local esp = {}
-local connection = nil
 
 local function applyESP(plr)
     if plr == player then return end
@@ -36,45 +33,34 @@ local function applyESP(plr)
     end)
 end
 
-function esp.Start()
-    print("✅ ESP AKTIF")
-
-    for _, p in pairs(Players:GetPlayers()) do
-        applyESP(p)
-    end
-
-    Players.PlayerAdded:Connect(applyESP)
-
-    connection = RunService.RenderStepped:Connect(function()
-        for _, plr in pairs(Players:GetPlayers()) do
-            if plr ~= player and plr.Character then
-                local h = plr.Character:FindFirstChild("ESP")
-                if h then
-                    local role = getRole(plr)
-                    if role == "KILLER" then
-                        h.FillColor = Color3.fromRGB(255,0,0)
-                    else
-                        h.FillColor = Color3.fromRGB(0,170,255)
-                    end
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local h = plr.Character:FindFirstChild("ESP")
+            if h then
+                local role = getRole(plr)
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255,0,0)
+                else
+                    h.FillColor = Color3.fromRGB(0,170,255)
                 end
             end
         end
-    end)
-end
+    end
+end)
 
-function esp.Stop()
+for _, p in pairs(Players:GetPlayers()) do
+    applyESP(p)
+end
+Players.PlayerAdded:Connect(applyESP)
+
+-- Simpan ke Global
+_G.espPlayer = {}
+_G.espPlayer.Start = function()
+    print("✅ ESP AKTIF")
+end
+_G.espPlayer.Stop = function()
     print("❌ ESP MATI")
-    if connection then
-        connection:Disconnect()
-        connection = nil
-    end
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr.Character then
-            local h = plr.Character:FindFirstChild("ESP")
-            if h then h:Destroy() end
-        end
-    end
 end
 
-_G.espPlayer = esp
-return esp
+return _G.espPlayer
