@@ -46,7 +46,7 @@ local function onUpdate()
         featuresLoaded = true
         print("🚀 MEMUAT FITUR ALL ROLE...")
         
-        loadScript("boostFps.lua")
+        loadScript("boostFps")
         loadScript("ipadView")
         loadScript("crosshair")
         loadScript("espPlayer")
