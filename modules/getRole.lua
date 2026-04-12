@@ -1,20 +1,18 @@
 -- getRole.lua
 
-if _G.__LOADER_ROLE then return end
-_G.__LOADER_ROLE = true
+if _G.RoleData then return end
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- Buat Event untuk memberi sinyal ke main.lua
-local UpdateEvent = Instance.new("BindableEvent")
-_G.RoleUpdate = UpdateEvent.Event
-
 _G.RoleData = {
     TeamName = "",
     IsLobby = false
 }
+
+local UpdateEvent = Instance.new("BindableEvent")
+_G.RoleUpdate = UpdateEvent.Event
 
 local function getTeamName(plr)
     if plr.Team then
@@ -23,23 +21,20 @@ local function getTeamName(plr)
     return ""
 end
 
-local lastStatus = nil
-local lastTeam = nil
+local last = nil
 
-RunService.RenderStepped:Connect(function()
+RunService.Heartbeat:Connect(function()
     local team = getTeamName(player)
-    local isLobbyNow = (team == "spectator")
+    local lobby = (team == "spectator")
 
-    -- Cek kalau ada perubahan
-    if isLobbyNow ~= lastStatus or team ~= lastTeam then
-        lastStatus = isLobbyNow
-        lastTeam = team
-        
-        -- Simpan data terbaru
-        _G.RoleData.TeamName = team
-        _G.RoleData.IsLobby = isLobbyNow
+    _G.RoleData.TeamName = team
+    _G.RoleData.IsLobby = lobby
 
-        -- KIRIM SINYAL KE MAIN.LUA
+    if last ~= lobby or last ~= team then
+        last = lobby
         UpdateEvent:Fire()
+        print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
     end
 end)
+
+print("✅ [GETROLE] LOADED!")
