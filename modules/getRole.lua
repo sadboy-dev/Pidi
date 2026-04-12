@@ -18,19 +18,21 @@ local function getTeamName(plr)
     return ""
 end
 
-local last = nil
+local lastStatus = nil
+local lastTeam = nil
 
 RunService.Heartbeat:Connect(function()
     local team = getTeamName(player)
-    local lobby = (team == "spectator")
+    local isLobbyNow = (team == "spectator")
 
     RoleData.TeamName = team
-    RoleData.IsLobby = lobby
+    RoleData.IsLobby = isLobbyNow
 
-    if last ~= lobby or last ~= team then
-        last = lobby
+    if lastStatus ~= isLobbyNow or lastTeam ~= team then
+        lastStatus = isLobbyNow
+        lastTeam = team
         UpdateEvent:Fire()
-        print("📡 [getRole] Update ->", team, "| Lobby:", lobby)
+        print("📡 [getRole] Update ->", team, "| Lobby:", isLobbyNow)
     end
 end)
 
