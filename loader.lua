@@ -1,26 +1,35 @@
--- LOADER SIMPLE
--- GANTI LINK DI BAWAH INI DENGAN LINK RAW KAMU
+local GITHUB = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main"
 
-local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/getRole.lua"
---local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/getRole.lua"
-local LINK_MAIN = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/main.lua"
+-- FUNGSI DOWNLOAD & BUAT FILE
+local function loadFile(path, name, parent)
+    local code = game:HttpGet(GITHUB .. path)
+    local mod = Instance.new("ModuleScript")
+    mod.Name = name
+    mod.Source = code
+    mod.Parent = parent
+    return mod
+end
 
+-- 1. BUAT FOLDER MODULES
+local folderMod = Instance.new("Folder")
+folderMod.Name = "modules"
+folderMod.Parent = script
+print("📂 Folder modules dibuat")
 
--- JALANKAN
-print("🔄 DOWNLOADING MODULE...")
-local moduleCode = game:HttpGet(LINK_GETROLE)
-local moduleFunc = loadstring(moduleCode)
+-- 2. DOWNLOAD SEMUA FILE MODULES
+loadFile("/modules/getRole.lua", "getRole", folderMod)
+loadFile("/modules/ipadView.lua", "ipadView", folderMod)
+loadFile("/modules/crosshair.lua", "crosshair", folderMod)
+loadFile("/modules/espPlayer.lua", "espPlayer", folderMod)
+print("✅ Semua module terdownload")
 
-if moduleFunc then
-    moduleFunc()
-    print("🔄 DOWNLOADING MAIN...")
-    local mainCode = game:HttpGet(LINK_MAIN)
-    local mainFunc = loadstring(mainCode)
-    if mainFunc then
-        mainFunc()
-    else
-        error("❌ GAGAL LOAD MAIN.LUA")
-    end
+-- 3. DOWNLOAD & JALANKAN MAIN.LUA
+local mainCode = game:HttpGet(GITHUB .. "/main.lua")
+local mainFunc = loadstring(mainCode)
+
+if mainFunc then
+    mainFunc()
+    print("🚀 SCRIPT BERHASIL Dijalankan!")
 else
-    error("❌ GAGAL LOAD GETROLE.LUA - CEK LINK!")
+    error("❌ GAGAL LOAD MAIN.LUA")
 end
