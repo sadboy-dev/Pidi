@@ -1,24 +1,23 @@
-local GITHUB = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main"
+-- LOADER SIMPLE
 
--- BUAT FOLDER
-local modFolder = Instance.new("Folder")
-modFolder.Name = "modules"
-modFolder.Parent = script
+local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/getRole.lua"
+local LINK_MAIN = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/main.lua"
 
--- DOWNLOAD GETROLE
-local getRoleCode = game:HttpGet(GITHUB .. "/modules/getRole.lua")
-local getRoleMod = Instance.new("ModuleScript")
-getRoleMod.Name = "getRole"
-getRoleMod.Source = getRoleCode
-getRoleMod.Parent = modFolder
+-- JALANKAN
+print("🔄 DOWNLOADING MODULE...")
+local moduleCode = game:HttpGet(LINK_GETROLE)
+local moduleFunc = loadstring(moduleCode)
 
--- DOWNLOAD & JALANKAN MAIN
-local mainCode = game:HttpGet(GITHUB .. "/main.lua")
-local mainFunc = loadstring(mainCode)
-
-if mainFunc then
-    mainFunc()
-    print("🚀 DONE!")
+if moduleFunc then
+    moduleFunc()
+    print("🔄 DOWNLOADING MAIN...")
+    local mainCode = game:HttpGet(LINK_MAIN)
+    local mainFunc = loadstring(mainCode)
+    if mainFunc then
+        mainFunc()
+    else
+        error("❌ GAGAL LOAD MAIN.LUA")
+    end
 else
-    error("❌ ERROR LOAD MAIN")
+    error("❌ GAGAL LOAD GETROLE.LUA - CEK LINK!")
 end
