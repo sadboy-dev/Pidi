@@ -1,9 +1,16 @@
--- modules/ipadView.lua
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Camera = nil
-local defaultFOV = 100
+local player = Players.LocalPlayer
 
-local function On()
+--------------------------------------------------
+-- 👀 FOV
+--------------------------------------------------
+local IPAD_FOV = 100
+
+local function applyFOV()
     if workspace.CurrentCamera then
         workspace.CurrentCamera.FieldOfView = IPAD_FOV
     end
