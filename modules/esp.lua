@@ -3,18 +3,19 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- Ambil fungsi getRole dari global
+-- Ambil fungsi dari global
 local getRole = _G.getRole
 
-local esp = {}
-local connection = nil
-
+-- ==============================================
+-- FUNGSI UTAMA
+-- ==============================================
 local function applyESP(plr)
     if plr == player then return end
 
     local function setup(char)
         if not char then return end
 
+        -- Hapus lama kalau ada
         local old = char:FindFirstChild("ESP")
         if old then old:Destroy() end
 
@@ -36,51 +37,46 @@ local function applyESP(plr)
     end)
 end
 
-function esp.Start()
-    print("✅ ESP AKTIF")
-
-    -- Terapkan ke player yang sudah ada
-    for _, p in pairs(Players:GetPlayers()) do
-        applyESP(p)
-    end
-
-    -- Event player baru masuk
-    Players.PlayerAdded:Connect(applyESP)
-
-    -- Loop update warna
-    connection = RunService.RenderStepped:Connect(function()
-        for _, plr in pairs(Players:GetPlayers()) do
-            if plr ~= player and plr.Character then
-                local h = plr.Character:FindFirstChild("ESP")
-                if h then
-                    local role = getRole(plr)
-                    if role == "KILLER" then
-                        h.FillColor = Color3.fromRGB(255,0,0)
-                    else
-                        h.FillColor = Color3.fromRGB(0,170,255)
-                    end
+-- ==============================================
+-- LOOP UPDATE WARNA
+-- ==============================================
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local h = plr.Character:FindFirstChild("ESP")
+            if h then
+                local role = getRole(plr)
+                
+                -- ATURAN WARNA:
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255, 0, 0) -- MERAH
+                elseif role == "SURVIVOR" then
+                    h.FillColor = Color3.fromRGB(0, 170, 255) -- BIRU
+                else -- SPECTATOR
+                    h.FillColor = Color3.fromRGB(255, 255, 255) -- PUTIH
                 end
             end
         end
-    end)
-end
+    end
+end)
 
-function esp.Stop()
+-- ==============================================
+-- JALANKAN OTOMATIS
+-- ==============================================
+for _, p in pairs(Players:GetPlayers()) do
+    applyESP(p)
+end
+Players.PlayerAdded:Connect(applyESP)
+
+-- ==============================================
+-- SIMPAN KE GLOBAL (AGAR TIDAK ERROR DI MAIN)
+-- ==============================================
+_G.espPlayer = {}
+_G.espPlayer.Start = function()
+    print("✅ ESP AKTIF & WARNA AKTIF")
+end
+_G.espPlayer.Stop = function()
     print("❌ ESP MATI")
-    if connection then
-        connection:Disconnect()
-        connection = nil
-    end
-
-    -- Hapus semua highlight
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr.Character then
-            local h = plr.Character:FindFirstChild("ESP")
-            if h then h:Destroy() end
-        end
-    end
 end
 
--- Simpan ke global
-_G.espPlayer = esp
-return esp
+return _G.espPlayer
