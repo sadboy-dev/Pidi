@@ -1,22 +1,45 @@
--- LOADER SIMPLE
+-- LOADER.LUA
+-- DOWNLOAD & LOAD SEMUA MODULES DARI GITHUB
 
-local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/getRole.lua"
-local LINK_MAIN = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/main.lua"
+if _G.__LOADER then return end
+_G.__LOADER = true
 
--- JALANKAN
-print("🔄 DOWNLOADING MODULE...")
-local moduleCode = game:HttpGet(LINK_GETROLE)
-local moduleFunc = loadstring(moduleCode)
+local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
 
-if moduleFunc then
-    moduleFunc()
-    local mainCode = game:HttpGet(LINK_MAIN)
-    local mainFunc = loadstring(mainCode)
-    if mainFunc then
-        mainFunc()
+-- DAFTAR FILE YANG AKAN DIAMBIL
+local files = {
+    "getRole.lua",
+    "boostFps.lua",
+    "ipadView.lua",
+    "crosshair.lua",
+    "espPlayer.lua"
+}
+
+print("====================================")
+print("📂 LOADER: MEMUAT SEMUA MODULES...")
+print("====================================")
+
+-- FUNGSI AMAN DOWNLOAD & JALANKAN
+local function loadModule(filename)
+    local link = BASE_URL .. filename
+    local success, err = pcall(function()
+        local code = game:HttpGet(link)
+        loadstring(code)()
+    end)
+
+    if success then
+        print("✅ BERHASIL: " .. filename)
     else
-        error("❌ GAGAL LOAD MAIN.LUA")
+        warn("❌ GAGAL: " .. filename .. " | " .. link)
     end
-else
-    error("❌ GAGAL LOAD GETROLE.LUA - CEK LINK!")
 end
+
+-- LOOPING DOWNLOAD SEMUA FILE
+for _, file in pairs(files) do
+    loadModule(file)
+    task.wait(0.05) -- jeda dikit biar tidak terlalu cepat
+end
+
+print("====================================")
+print("✅ PROSES SELESAI!")
+print("====================================")
