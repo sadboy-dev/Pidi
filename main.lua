@@ -2,7 +2,7 @@
 if _G.__MAIN then return end
 _G.__MAIN = true
 
--- TUNGGU SIAP
+-- TUNGGU SEMUA SIAP
 repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView
 task.wait(0.5)
 
@@ -13,4 +13,4 @@ print("====================================")
 -- JALANKAN SEMUA
 _G.boostFps()
 _G.ipadView()
-_G.espPlayer.Start() -- PAKAI TITIK SATU (.)
+_G.espPlayer.Start() -- PAKAI TITIK SATU, PASTI GAK ERROR
