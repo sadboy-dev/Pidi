@@ -1,5 +1,4 @@
 -- getRole.lua
--- VERSI UNTUK LOADER SIMPLE
 
 if _G.RoleData then return end
 
@@ -22,27 +21,25 @@ local function getTeamName(plr)
     return ""
 end
 
+-- BUAT DUA VARIABEL PENYIMPAN
 local lastStatus = nil
 local lastTeam = nil
 
 RunService.Heartbeat:Connect(function()
     local team = getTeamName(player)
-    local isLobbyNow = (team == "spectator")
+    local lobby = (team == "spectator")
 
     _G.RoleData.TeamName = team
-    _G.RoleData.IsLobby = isLobbyNow
+    _G.RoleData.IsLobby = lobby
 
-    -- PRINT HANYA KALAU BERUBAH
-    if lastStatus ~= isLobbyNow or lastTeam ~= team then
-        lastStatus = isLobbyNow
+    -- 👇 KUNCINYA DISINI
+    -- Hanya jalan kalau STATUS ATAU TEAM BENAR-BENAR BERUBAH
+    if lastStatus ~= lobby or lastTeam ~= team then
+        lastStatus = lobby
         lastTeam = team
-        UpdateEvent:Fire()
         
-        if isLobbyNow then
-            print("📡 [getRole] STATUS: LOBBY")
-        else
-            print("📡 [getRole] STATUS: INGAME | ROLE:", team)
-        end
+        UpdateEvent:Fire()
+        print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
     end
 end)
 
