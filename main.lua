@@ -3,9 +3,7 @@ if _G.__MAIN then return end
 _G.__MAIN = true
 
 -- TUNGGU SEMUA SIAP
-repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair
-task.wait(0.5)
-repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair and _G.espGene
+repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair and _G.espGene and _G.autoGen
 task.wait(0.5)
 
 
@@ -19,6 +17,7 @@ local boostFps = _G.boostFps
 local ipadView = _G.ipadView
 local crosshair = _G.crosshair
 local espGene = _G.espGene
+local autoGen = _G.autoGen
 
 local lastRole = nil
 
@@ -48,3 +47,6 @@ end
 _G.espPlayer.Start()
 _G.espPlayer.Start()
 _G.espGene.Start()
+_G.espPlayer.Start()
+_G.espGene.Start()
+_G.autoGen.Start()
