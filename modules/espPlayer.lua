@@ -1,10 +1,7 @@
--- espPlayer.lua - VERSI WARNA PASTI MUNCUL
+-- espPlayer.lua - VERSI DETECT SENDIRI
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
-
--- ❌ HAPUS BARIS INI: local getRole = _G.getRole
--- ✅ KITA AMBIL DI DALAM LOOP AJA
 
 -- ==============================================
 -- FUNGSI BUAT BOX
@@ -23,7 +20,7 @@ local function applyESP(plr)
         h.FillTransparency = 0.5
         h.OutlineTransparency = 0
         h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        h.FillColor = Color3.fromRGB(255,255,255) -- Default PUTIH
+        h.FillColor = Color3.fromRGB(255,255,255) -- Default Putih
         h.Parent = char
     end
 
@@ -41,23 +38,29 @@ end
 -- LOOP UPDATE WARNA
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- ✅ AMBIL getRole DISINI SETIAP KALI
-    local getRole = _G.getRole
-
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                if getRole then
-                    local role = getRole(plr)
+                
+                -- ✅ LOGIKA DETECT ROLE LANGSUNG DISINI
+                local role = "SPECTATOR" -- Default
+                
+                if plr.Team then
+                    local teamName = plr.Team.Name:lower()
                     
-                    if role == "KILLER" then
-                        h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
-                    elseif role == "SURVIVOR" then
-                        h.FillColor = Color3.fromRGB(0, 170, 255) -- 🔵 BIRU
-                    else
-                        h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
+                    if teamName:find("killer") then
+                        role = "KILLER"
+                    elseif teamName:find("survivor") then
+                        role = "SURVIVOR"
                     end
+                end
+
+                -- ✅ SET WARNA
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
+                elseif role == "SURVIVOR" then
+                    h.FillColor = Color3.fromRGB(0, 170, 255) -- 🔵 BIRU
                 else
                     h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
                 end
