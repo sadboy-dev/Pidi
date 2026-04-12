@@ -1,13 +1,13 @@
--- espPlayer.lua
+-- espPlayer.lua - VERSI FINAL STABIL
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
--- AMBIL FUNGSI DARI GLOBAL
+-- AMBIL FUNGSI DARI GLOBAL (PASTI ADA)
 local getRole = _G.getRole
 
 -- ==============================================
--- FUNGSI BUAT ESP
+-- FUNGSI BUAT BOX
 -- ==============================================
 local function applyESP(plr)
     if plr == player then return end
@@ -15,9 +15,11 @@ local function applyESP(plr)
     local function setup(char)
         if not char then return end
 
+        -- Hapus lama
         local old = char:FindFirstChild("ESP")
         if old then old:Destroy() end
 
+        -- Buat baru
         local h = Instance.new("Highlight")
         h.Name = "ESP"
         h.FillTransparency = 0.5
@@ -44,20 +46,15 @@ RunService.RenderStepped:Connect(function()
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                -- CEK APAKAH getRole ADA DAN BISA DIPAKAI
-                if getRole then
-                    local role = getRole(plr)
-                    
-                    if role == "KILLER" then
-                        h.FillColor = Color3.fromRGB(255, 0, 0) -- MERAH
-                    elseif role == "SURVIVOR" then
-                        h.FillColor = Color3.fromRGB(0, 170, 255) -- BIRU
-                    else
-                        h.FillColor = Color3.fromRGB(255, 255, 255) -- PUTIH
-                    end
+                local role = getRole(plr)
+                
+                -- WARNA SESUAI ROLE
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255, 0, 0)   -- 🔴 MERAH
+                elseif role == "SURVIVOR" then
+                    h.FillColor = Color3.fromRGB(0, 170, 255) -- 🔵 BIRU
                 else
-                    -- Kalau getRole gak ada, warna abu-abu biar gak merah semua
-                    h.FillColor = Color3.fromRGB(128, 128, 128)
+                    h.FillColor = Color3.fromRGB(255, 255, 255) -- ⚪ PUTIH
                 end
             end
         end
@@ -75,13 +72,13 @@ Players.PlayerAdded:Connect(applyESP)
 -- ==============================================
 -- SIMPAN KE GLOBAL (VERSI PALING AMAN)
 -- ==============================================
-_G.espPlayer = {
-    Start = function()
-        print("✅ ESP AKTIF")
-    end,
-    Stop = function()
-        print("❌ ESP MATI")
-    end
-}
+local espModule = {}
+function espModule.Start()
+    print("✅ ESP AKTIF")
+end
+function espModule.Stop()
+    print("❌ ESP MATI")
+end
 
-return _G.espPlayer
+_G.espPlayer = espModule
+return espModule
