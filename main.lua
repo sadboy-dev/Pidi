@@ -16,20 +16,24 @@ local function getTeam(plr)
     if plr.Team then
         return plr.Team.Name:lower()
     end
-    return "" -- Kembalikan kosong kalau tidak ada team
+    return ""
 end
 
-local lastTeam = ""
+local lastStatus = nil -- Untuk menyimpan status sebelumnya
 
 RunService.RenderStepped:Connect(function()
     local team = getTeam(player)
-    
+    local currentStatus
+
     if team == "spectator" then
-        print("📍 STATUS: LOBBY")
+        currentStatus = "LOBBY"
     else
-        print("📍 STATUS: INGAME")
-        print("🎭 ROLE KAMU:", team)
+        currentStatus = "INGAME - "..team
     end
-    
-    lastTeam = team
+
+    -- Hanya print kalau statusnya BERUBAH
+    if currentStatus ~= lastStatus then
+        lastStatus = currentStatus
+        print("📍 STATUS:", currentStatus)
+    end
 end)
