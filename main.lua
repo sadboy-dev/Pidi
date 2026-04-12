@@ -27,7 +27,7 @@ local function updateFeatures()
     -- ==============================================
     -- 🎯 ESP: HANYA BUKAN SPECTATOR
     -- ==============================================
-    local shouldEnable = (myRole ~= "SPECTATOR")
+    local shouldEnable = true -- Paksa nyala semua role
 
     if shouldEnable and lastState ~= true then
         print("🚀 MENGAKTIFKAN FITUR GAME...")
