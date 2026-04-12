@@ -1,4 +1,4 @@
--- MAIN.LUA - VERSI FINAL STABIL
+-- MAIN.LUA - VERSI FINAL 100% AMAN
 if _G.__MAIN then return end
 _G.__MAIN = true
 
@@ -15,7 +15,7 @@ and _G.crosshair
 and _G.espGene 
 and _G.autoGen
 
-task.wait(0.5) -- Jeda biar aman
+task.wait(0.5)
 
 print("====================================")
 print("✅ SCRIPT LOAD SELESAI")
@@ -38,15 +38,13 @@ local lastRole = nil
 -- LOOP UPDATE
 -- ==============================================
 while task.wait(0.5) do
-    -- Cek role dulu
-    if not getRole then continue end
+    -- ✅ PANGGIL TANPA PARAMETER (getRole())
     local myRole = getRole()
 
     -- 🔄 JALANKAN ULANG KETIKA ROLE BERUBAH
     if myRole ~= lastRole then
         print("🎭 ROLE BERUBAH: " .. tostring(myRole))
         
-        -- Jalankan fitur performa & kamera
         if boostFps then boostFps() end
         if ipadView then ipadView() end
         if crosshair then crosshair.Start() end
@@ -56,7 +54,7 @@ while task.wait(0.5) do
 end
 
 -- ==============================================
--- JALANKAN FITUR YANG JALAN TERUS
+-- JALANKAN FITUR LAIN
 -- ==============================================
 if espPlayer then espPlayer.Start() end
 if espGene then espGene.Start() end
