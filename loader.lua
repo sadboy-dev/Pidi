@@ -1,8 +1,10 @@
 -- LOADER SIMPLE
 -- GANTI LINK DI BAWAH INI DENGAN LINK RAW KAMU
 
-local LINK_GETROLE = "https://raw.githubusercontent.com/USERNAME/REPO/main/getRole.lua"
-local LINK_MAIN = "https://raw.githubusercontent.com/USERNAME/REPO/main/main.lua"
+local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/getRole.lua"
+--local LINK_GETROLE = "https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/getRole.lua"
+local LINK_MAIN = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/main.lua"
+
 
 -- JALANKAN
 print("🔄 DOWNLOADING MODULE...")
