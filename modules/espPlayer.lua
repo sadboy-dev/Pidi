@@ -1,5 +1,6 @@
 return esp
 _G.espPlayer = esp -- TAMBAH INI JUGA!
+print("🔥 VERSI BARU ESP PLAYER - 10:07")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
