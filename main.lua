@@ -9,12 +9,12 @@ local player = Players.LocalPlayer
 -- ================= LOAD MODULE =================
 local Modules = {}
 
-Modules.ESP = loadstring(game:HttpGet("https://yourdomain.com/modules/esp.lua"))()
-Modules.Generator = loadstring(game:HttpGet("https://yourdomain.com/modules/generator.lua"))()
-Modules.Aimbot = loadstring(game:HttpGet("https://yourdomain.com/modules/aimbot.lua"))()
-Modules.AutoGene = loadstring(game:HttpGet("https://yourdomain.com/modules/autogene.lua"))()
-Modules.Boost = loadstring(game:HttpGet("https://yourdomain.com/modules/boost.lua"))()
-Modules.Crosshair = loadstring(game:HttpGet("https://yourdomain.com/modules/crosshair.lua"))()
+Modules.ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/esp.lua"))()
+Modules.Generator = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/generator.lua"))()
+Modules.Aimbot = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/aimbot.lua"))()
+Modules.AutoGene = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/autogene.lua"))()
+Modules.Boost = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/boost.lua"))()
+Modules.Crosshair = loadstring(game:HttpGet("https://raw.githubusercontent.com/sadboy-dev/Pidi/refs/heads/main/modules/crosshair.lua"))()
 
 -- ================= ROLE =================
 local function getRole()
