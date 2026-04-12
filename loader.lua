@@ -10,7 +10,7 @@ local files = {
     "boostFps.lua",
     "ipadView.lua",
     "crosshair.lua",
-    "esp.lua"
+    "espPlayer.lua"
 }
 
 print("====================================")
@@ -35,7 +35,7 @@ for _, file in pairs(files) do
     loadModule(file)
     task.wait(0.1)
 end
-print("File esp.lua")
+print("File espPlayer.lua")
 print("====================================")
 print("✅ PROSES SELESAI!")
 print("====================================")
