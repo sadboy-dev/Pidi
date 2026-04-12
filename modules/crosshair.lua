@@ -7,31 +7,48 @@ function crosshair.Start()
     local player = Players.LocalPlayer
     local PlayerGui = player:WaitForChild("PlayerGui")
 
-    local function create()
-        if PlayerGui:FindFirstChild("CROSSHAIR") then return end
+    local sgName = "CROSSHAIR"
+
+    local function createCrosshair()
+        if PlayerGui:FindFirstChild(sgName) then return end
 
         local sg = Instance.new("ScreenGui")
-        sg.Name = "CROSSHAIR"
-        sg.ResetOnSpawn = false -- ❗ PENTING: Biar gak ilang pas respawn
+        sg.Name = sgName
+        sg.ResetOnSpawn = false
         sg.ZIndexBehavior = Enum.ZIndexBehavior.Global
         sg.Parent = PlayerGui
 
         local dot = Instance.new("Frame")
-        dot.Size = UDim2.new(0, 6, 0, 6)
-        dot.Position = UDim2.new(0.5, -3, 0.5, -3)
-        dot.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+        dot.Name = "Dot"
+        dot.Size = UDim2.new(0, 8, 0, 8)
+        dot.Position = UDim2.new(0.5, -4, 0.5, -4)
+        dot.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
         dot.BorderSizePixel = 0
         dot.Parent = sg
+
+        local outline = Instance.new("UIStroke")
+        outline.Thickness = 1
+        outline.Color = Color3.new(0,0,0)
+        outline.Parent = dot
+
+        print("Crosshair dibuat ulang")
     end
 
     -- Buat pertama kali
-    create()
+    createCrosshair()
 
-    -- Auto recreate kalau hilang
-    RunService.RenderStepped:Connect(function()
-        if not PlayerGui:FindFirstChild("CROSSHAIR") then
-            create()
+    -- Hanya 1 koneksi RenderStepped (lebih bersih)
+    local connection
+    connection = RunService.RenderStepped:Connect(function()
+        if not PlayerGui:FindFirstChild(sgName) then
+            createCrosshair()
         end
+    end)
+
+    -- Cleanup kalau module di-restart
+    player.CharacterAdded:Connect(function()
+        task.wait(0.3)
+        createCrosshair()
     end)
 end
 
