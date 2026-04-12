@@ -42,5 +42,3 @@ RunService.Heartbeat:Connect(function()
         print("📡 [GETROLE] Update ->", team, "Lobby:", lobby)
     end
 end)
-
-print("✅ [GETROLE] LOADED!")
