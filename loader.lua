@@ -12,7 +12,8 @@ local FILES = {
     "boostFps.lua",
     "ipadView.lua",
     "crosshair.lua",
-    "espGene.lua" -- FILE BARU
+    "espGene.lua",
+    "autoGen.lua"
 }
 
 print("====================================")
