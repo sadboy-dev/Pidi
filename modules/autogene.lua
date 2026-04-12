@@ -6,22 +6,22 @@ function autogene.Start(getRole)
     local RunService = game:GetService("RunService")
     local player = Players.LocalPlayer
 
-    local remote = ReplicatedStorage:WaitForChild("Remotes", 10)
+    local remote = ReplicatedStorage:WaitForChild("Remotes", 8)
         :WaitForChild("Generator", 5)
         :WaitForChild("SkillCheckResultEvent", 5)
 
     local isActive = false
     local lastFire = 0
 
-    local function getClosestGenerator()
+    local function isNearGenerator()
         local char = player.Character
         local root = char and char:FindFirstChild("HumanoidRootPart")
         if not root then return false end
-
-        for _, gen in ipairs(workspace:GetDescendants()) do
-            if gen.Name:find("Generator") or gen.Name == "Gen" then
-                local point = gen:FindFirstChild("GeneratorPoint1") or gen.PrimaryPart
-                if point and (root.Position - point.Position).Magnitude < 8 then
+        -- Cek jarak ke generator (lebih akurat)
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj.Name:match("Generator") or obj.Name == "Gen" then
+                local point = obj:FindFirstChild("GeneratorPoint1") or obj.PrimaryPart
+                if point and (root.Position - point.Position).Magnitude < 7 then
                     return true
                 end
             end
@@ -31,20 +31,22 @@ function autogene.Start(getRole)
 
     local function skillCheckLoop()
         while isActive do
-            task.wait(0.07)
+            task.wait(0.08)
 
-            if not getClosestGenerator() then continue end
+            if not isNearGenerator() then continue end
 
-            local playerGui = player:WaitForChild("PlayerGui")
-            local skillGui = playerGui:FindFirstChild("SkillCheckPromptGui")
-                         or playerGui:FindFirstChild("SkillCheck")  -- tambahan nama alternatif
+            local playerGui = player:WaitForChild("PlayerGui", 2)
+            if not playerGui then continue end
+
+            local skillGui = playerGui:FindFirstChild("SkillCheckPromptGui") 
+                          or playerGui:FindFirstChild("SkillCheck")
 
             if not skillGui then continue end
 
-            -- Deteksi lebih akurat (sesuai script original kamu)
+            -- Deteksi yang aman (tidak pakai FindFirstChildWhichIsA sembarangan)
             local check = skillGui:FindFirstChild("Check") 
-                       or skillGui:FindFirstChild("Prompt")
-                       or skillGui:FindFirstChildWhichIsA("Frame")
+                       or skillGui:FindFirstChild("Prompt") 
+                       or skillGui:FindFirstChild("Area")
 
             if check and check.Visible then
                 if tick() - lastFire > 0.1 then
@@ -64,15 +66,14 @@ function autogene.Start(getRole)
     end
 
     local function stopAutoGene()
-        if not isActive then return end
         isActive = false
         print("AUTO GENE DIMATIKAN")
     end
 
-    -- Monitor role (tetap jalan permanent)
+    -- Monitor role
     task.spawn(function()
         while true do
-            task.wait(0.4)
+            task.wait(0.5)
             local role = getRole and getRole() or "UNKNOWN"
             if role == "SURVIVOR" then
                 startAutoGene()
@@ -82,7 +83,7 @@ function autogene.Start(getRole)
         end
     end)
 
-    print("Module AutoGene v2 berhasil dimuat!")
+    print("AutoGene v3 loaded (error ImageLabel sudah diperbaiki)")
 end
 
 return autogene
