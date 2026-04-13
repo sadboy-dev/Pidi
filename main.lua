@@ -59,11 +59,16 @@ while task.wait(0.5) do
         print("🎭 ROLE BERUBAH: " .. tostring(myRole))
         
         -- ✅ TAMBAH PROTEKSI IF DULU
-        if boostFps then boostFps() end
-        if ipadView then ipadView() end
+        if boostFps then startBoost() end
+        if ipadView then applyFOV() end
         if crosshair then crosshair.Start() end
         
         lastRole = myRole
+        if myRole ~= "SURVIVOR" and myRole ~= "SPECTATOR" then
+            print("Masuk di Fitur Khusus Survi dan Spect")
+        else
+            print("Role Yang Ditahan")
+        end 
     end
 end
 
