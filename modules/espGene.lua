@@ -1,4 +1,4 @@
--- espGene.lua - VERSI SIMPEL & PASTI NYALA
+-- espGene.lua - VERSI FIX ERROR LINE 118
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -110,12 +110,21 @@ end
 -- ==============================================
 -- LOOP UTAMA
 -- ==============================================
--- ✅ KITA SIMPAN getRole KE VARIABEL DULU
-local getRole = _G.getRole
-
 RunService.RenderStepped:Connect(function()
-    -- ✅ AMBIL ROLE
-    local myRole = getRole()
+    -- ✅ AMBIL LANGSUNG DARI _G SETIAP KALI
+    local getRoleFunc = _G.getRole
+    
+    -- ✅ CEK DULU ADA ATAU ENGGA
+    if not getRoleFunc then 
+        -- Sembunyikan semua kalau belum siap
+        for obj,_ in pairs(espGenObjects) do
+            removeGenESP(obj)
+        end
+        return 
+    end
+    
+    -- ✅ PANGGIL FUNGSINYA
+    local myRole = getRoleFunc()
 
     -- ✅ HANYA SPECTATOR & SURVIVOR
     if myRole ~= "SPECTATOR" and myRole ~= "SURVIVOR" then
