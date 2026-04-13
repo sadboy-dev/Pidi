@@ -1,8 +1,22 @@
--- espGene.lua - VERSI FIX ERROR LINE 118
+-- espGene.lua - VERSI FINAL & AMAN
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+local Players = game:GetService("Players")
 
+local player = Players.LocalPlayer
 local espGenObjects = {}
+
+-- ==============================================
+-- FUNGSI GET ROLE (SAMA PERSIS DI SCRIPT KAMU)
+-- ==============================================
+local function getRole(plr)
+    if plr.Team then
+        local n = plr.Team.Name:lower()
+        if n:find("killer") then return "KILLER" end
+        if n:find("survivor") then return "SURVIVOR" end
+    end
+    return "UNKNOWN"
+end
 
 -- ==============================================
 -- FUNGSI HAPUS ESP
@@ -24,30 +38,29 @@ local function createGenESP(obj, color, percent)
 
     if data then
         data.highlight.FillColor = color
+        data.highlight.OutlineColor = color
         data.label.Text = percent .. "%"
         data.label.TextColor3 = color
         return
     end
 
-    -- Highlight
     local h = Instance.new("Highlight")
     h.Name = "GenESP"
     h.FillColor = color
     h.FillTransparency = 0.5
+    h.OutlineColor = color
     h.OutlineTransparency = 0
     h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     h.Parent = obj
 
-    -- Billboard GUI
     local bill = Instance.new("BillboardGui")
     bill.Name = "GenGUI"
-    bill.Size = UDim2.new(0, 100, 0, 40)
+    bill.Size = UDim2.new(0,100,0,40)
     bill.AlwaysOnTop = true
     bill.Parent = obj
 
-    -- Label Text
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1, 0, 1, 0)
+    label.Size = UDim2.new(1,0,1,0)
     label.BackgroundTransparency = 1
     label.TextScaled = false
     label.TextSize = 14
@@ -99,7 +112,7 @@ local function getGenerators()
     if not map then return gens end
 
     for _, v in pairs(map:GetDescendants()) do
-        if v.Name == "Generator" or v.Name:lower() == "generator" then
+        if v.Name == "Generator" then
             table.insert(gens, v)
         end
     end
@@ -108,33 +121,22 @@ local function getGenerators()
 end
 
 -- ==============================================
--- LOOP UTAMA
+-- LOOP UTAMA + SORTIR ROLE AMAN
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- ✅ AMBIL LANGSUNG DARI _G SETIAP KALI
-    local getRoleFunc = _G.getRole
-    
-    -- ✅ CEK DULU ADA ATAU ENGGA
-    if not getRoleFunc then 
-        -- Sembunyikan semua kalau belum siap
-        for obj,_ in pairs(espGenObjects) do
-            removeGenESP(obj)
-        end
-        return 
-    end
-    
-    -- ✅ PANGGIL FUNGSINYA
-    local myRole = getRoleFunc()
+    -- ✅ AMBIL ROLE
+    local myRole = getRole(player)
 
-    -- ✅ HANYA SPECTATOR & SURVIVOR
-    if myRole ~= "SPECTATOR" and myRole ~= "SURVIVOR" then
-        for obj, _ in pairs(espGenObjects) do
+    -- ✅ SYARAT: HANYA SURVIVOR & SPECTATOR
+    if myRole ~= "SURVIVOR" and myRole ~= "SPECTATOR" then
+        -- Hapus semua ESP kalau role bukan yang diizinkan
+        for obj,_ in pairs(espGenObjects) do
             removeGenESP(obj)
         end
         return
     end
 
-    -- Jalanin ESP
+    -- ✅ JALANKAN ESP
     for _, gen in pairs(getGenerators()) do
         local progress = getGeneratorProgress(gen)
         local percent = math.floor(progress * 100)
@@ -145,11 +147,11 @@ RunService.RenderStepped:Connect(function()
 end)
 
 -- ==============================================
--- SIMPAN KE GLOBAL
+-- SIMPAN KE GLOBAL (UNTUK MAIN.LUA)
 -- ==============================================
 _G.espGene = {
     Start = function()
-        print("⚡ ESP GENERATOR AKTIF (SPEC & SURV ONLY)")
+        print("⚡ ESP GENERATOR AKTIF (SURV & SPEC ONLY)")
     end,
     Stop = function()
         print("❌ ESP GENERATOR MATI")
