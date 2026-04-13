@@ -1,4 +1,4 @@
--- espGene.lua - VERSI SESUAI CONTOH KAMU
+-- espGene.lua - VERSI FIX ERROR
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -50,7 +50,7 @@ local function createGenESP(obj, color, percent)
     label.Size = UDim2.new(1, 0, 1, 0)
     label.BackgroundTransparency = 1
     label.TextScaled = false
-    label.TextSize = 14 -- ✅ UKURAN PAS
+    label.TextSize = 14
     label.Font = Enum.Font.SourceSansBold
     label.TextStrokeTransparency = 0
     label.Text = percent .. "%"
@@ -111,23 +111,21 @@ end
 -- LOOP UTAMA
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    local myRole = _G.getRole() -- Ambil role kamu
+    -- ✅ PERBAIKI: getRole() TANPA PARAMETER
+    local myRole = _G.getRole()
 
-    -- ✅ SYARAT: HANYA SPECTATOR & SURVIVOR YANG BISA LIHAT
+    -- ✅ HANYA SPECTATOR & SURVIVOR
     if myRole ~= "SPECTATOR" and myRole ~= "SURVIVOR" then
-        -- Sembunyikan semua kalau bukan role yang diizinkan
         for obj, _ in pairs(espGenObjects) do
             removeGenESP(obj)
         end
         return
     end
 
-    -- Jalanin ESP kalau role aman
+    -- Jalanin ESP
     for _, gen in pairs(getGenerators()) do
         local progress = getGeneratorProgress(gen)
         local percent = math.floor(progress * 100)
-        
-        -- Warna berubah dari Putih -> Hijau sesuai progress
         local color = Color3.fromRGB(255,255,255):Lerp(Color3.fromRGB(0,255,0), progress)
 
         createGenESP(gen, color, percent)
@@ -137,16 +135,16 @@ end)
 -- ==============================================
 -- SIMPAN KE GLOBAL
 -- ==============================================
-_G.espGene = {}
-function _G.espGene.Start()
-    print("⚡ ESP GENERATOR AKTIF (SPEC & SURV ONLY)")
-end
-function _G.espGene.Stop()
-    print("❌ ESP GENERATOR MATI")
-    -- Hapus semua object
-    for obj, _ in pairs(espGenObjects) do
-        removeGenESP(obj)
+_G.espGene = {
+    Start = function()
+        print("⚡ ESP GENERATOR AKTIF (SPEC & SURV ONLY)")
+    end,
+    Stop = function()
+        print("❌ ESP GENERATOR MATI")
+        for obj, _ in pairs(espGenObjects) do
+            removeGenESP(obj)
+        end
     end
-end
+}
 
 return _G.espGene
