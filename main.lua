@@ -12,9 +12,6 @@ _G.FeatureState = _G.FeatureState or {
 }
 local roleOld = string.upper(_G.RoleData.TeamName))
 
-print("✅ Posisi awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
-print(string.upper(_G.RoleData.TeamName))
-
 -- Fungsi global untuk toggle fitur (bisa dipanggil dari script lain)
 function _G.Toggle(featureName, enabled)
     if _G.FeatureState[featureName] ~= nil then
