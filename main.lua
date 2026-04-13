@@ -32,21 +32,23 @@ end
 function _G.SortFeaturesByRole()
     local currentRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
     
-    print("🔀 Sorting fitur untuk role:", currentRole)
 
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
-    if currentRole == "LOBBY" or currentRole == "SPECTATOR" or currentRole == "SURVIVOR" then
-        print("🏠 Mode: Lobby / Spectator / Survivor")
+    if currentRole == "SURVIVOR" then
+        print("🌐 Team: SURVIVOR")
         -- Contoh: Fitur yang boleh aktif di lobby/spectator/survivor
         -- _G.Toggle("ESP", true)           -- contoh
         -- _G.Toggle("AutoFarm", false)     -- matikan yang berbahaya
 
     elseif currentRole == "KILLER" then
-        print("🔪 Mode: KILLER")
+        print("🔪 Team: KILLER")
         -- Fitur khusus Killer
         -- _G.Toggle("KillAura", true)
         -- _G.Toggle("AutoFarm", true)
+
+    elseif currentRole == "SPECTATOR" then
+        print("🏠 Team: SPECTATOR")
 
     else
         print("🌐 Mode: All Role / Role Lainnya")
