@@ -36,3 +36,12 @@ _G.RoleUpdate:Connect(function()
     end
 end)
 
+if roleOld ~= "SPECTATOR" or roleOld ~= "SURVIVOR" then
+    print("Sortir Fitur Untuk Role Spectator dan Survivor")
+elseif roleOld ~= "KILLER" then
+    print("Fitur Untuk Killer")
+else
+    print("Fitur AllRole")
+end
+
+
