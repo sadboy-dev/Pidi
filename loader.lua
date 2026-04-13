@@ -2,48 +2,44 @@
 if _G.__LOADER then return end
 _G.__LOADER = true
 
--- LINK GITHUB KAMU
-local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules/"
+-- loader.lua
+print("🚀 LOADER MULAI - Loading semua modules dari GitHub...")
 
--- DAFTAR FILE YANG AKAN DI-DOWNLOAD
-local FILES = {
-    "getRole.lua"
-    --"espPlayer.lua",
-    --"boostFps.lua",
-    --"ipadView.lua",
-    --"crosshair.lua",
-    -- "espGene.lua",
-    -- "autoGen.lua"
+local baseUrl = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/"   -- GANTI DENGAN REPO KAMU
+
+-- Daftar modules yang ingin di-load (bisa tambah banyak)
+local modulesToLoad = {
+    "modules/getRole.lua",   -- fitur role
+    -- "modules/esp.lua",
+    -- "modules/autofarm.lua",
+    -- tambahkan fitur lain di sini
 }
 
-print("====================================")
-print("🔄 MEMUAT SCRIPT...")
-print("====================================")
-
-local function loadModule(name)
-    local link = BASE_URL .. name .. "?t=" .. os.time() -- ⚡ ANTI CACHE
-    
+-- Load semua modules terlebih dahulu
+for _, path in ipairs(modulesToLoad) do
     local success, err = pcall(function()
-        local code = game:HttpGet(link)
-        loadstring(code)()
+        loadstring(game:HttpGet(baseUrl .. path))()
     end)
-
+    
     if success then
-        print("✅ " .. name)
+        print("✅ Module loaded:", path)
     else
-        warn("❌ " .. name .. " - GAGAL")
+        warn("❌ Gagal load module:", path, "| Error:", err)
     end
+    task.wait(0.4)  -- jeda agar stabil
 end
 
--- DOWNLOAD & JALANKAN SEMUA
-for _, file in pairs(FILES) do
-    loadModule(file)
-    task.wait(0.05) -- Sedikit jeda biar urut
+print("✅ SEMUA MODULES DARI FOLDER modules/ TELAH DI-LOAD")
+
+-- Setelah semua modules siap, baru load main.lua sebagai base
+print("🔄 Memuat main.lua sebagai central base...")
+
+local mainSuccess, mainErr = pcall(function()
+    loadstring(game:HttpGet(baseUrl .. "main.lua"))()
+end)
+
+if mainSuccess then
+    print("🎉 LOADER SELESAI! main.lua sekarang berjalan sebagai base.")
+else
+    warn("❌ Gagal memuat main.lua:", mainErr)
 end
-
-print("====================================")
-print("✅ LOADER SELESAI!")
-print("====================================")
-
--- KITA PANGGIL MAIN.LUA LANGSUNG DISINI
-loadModule("main.lua")
