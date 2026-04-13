@@ -5,16 +5,16 @@ end
 
 -- Tabel global untuk menyimpan status ON/OFF semua fitur
 _G.FeatureState = _G.FeatureState or {
-    AutoFarm = false,
-    ESP = false,
-    KillAura = false,
+    ipadView = false,
+    boostFps = false,
+    crosshair = false,
     -- Tambahkan fitur baru di sini
 }
 
 -- Simpan role sebelumnya
 local roleOld = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
 
-print("✅ main.lua loaded sebagai base. Role awal:", roleOld)
+print("✅Role awal:", roleOld)
 
 -- =============================================
 -- FUNCTION KHUSUS
@@ -74,7 +74,7 @@ _G.RoleUpdate:Connect(function()
 
     -- Hanya proses jika role benar-benar berubah
     if newRole ~= roleOld then
-        print("🔄 [MAIN] Role berubah → " .. newRole .. " (dari " .. roleOld .. ")")
+        print("🔄 [MAIN] Role berubah: " .. roleOld .. " → " .. newRole .. "")
         
         roleOld = newRole   -- Update role lama
         
@@ -85,5 +85,3 @@ end)
 
 -- Jalankan sorting pertama kali saat main.lua di-load
 _G.SortFeaturesByRole()
-
-print("🎯 main.lua siap! Gunakan _G.Toggle('NamaFitur', true/false) dan _G.ResetAllFeatures()")
