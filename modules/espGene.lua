@@ -1,4 +1,4 @@
--- espGene.lua - VERSI FIX ERROR
+-- espGene.lua - VERSI FIX ERROR LINE 115
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -111,7 +111,10 @@ end
 -- LOOP UTAMA
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- ✅ PERBAIKI: getRole() TANPA PARAMETER
+    -- ✅ TAMBAH PROTEKSI: CEK DULU ADA ATAU ENGGA
+    if not _G.getRole then return end
+    
+    -- ✅ PANGGIL TANPA PARAMETER
     local myRole = _G.getRole()
 
     -- ✅ HANYA SPECTATOR & SURVIVOR
