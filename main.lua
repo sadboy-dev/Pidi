@@ -1,14 +1,28 @@
--- MAIN.LUA - VERSI FIX ERROR LINE 56
+-- MAIN.LUA - VERSI FINAL 100% AMAN
 if _G.__MAIN then return end
 _G.__MAIN = true
+
+-- ==============================================
+-- DEFINISI FUNGSI GET ROLE SAMA PERSIS
+-- ==============================================
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function getRole(plr)
+    if plr.Team then
+        local n = plr.Team.Name:lower()
+        if n:find("killer") then return "KILLER" end
+        if n:find("survivor") then return "SURVIVOR" end
+    end
+    return "UNKNOWN"
+end
 
 -- ==============================================
 -- TUNGGU SEMUA MODUL SIAP
 -- ==============================================
 repeat
     task.wait(0.1)
-until _G.getRole 
-and _G.espPlayer 
+until _G.espPlayer 
 and _G.boostFps 
 and _G.ipadView 
 and _G.crosshair 
@@ -24,7 +38,6 @@ print("====================================")
 -- ==============================================
 -- AMBIL SEMUA FUNGSI
 -- ==============================================
-local getRole = _G.getRole
 local espPlayer = _G.espPlayer
 local boostFps = _G.boostFps
 local ipadView = _G.ipadView
@@ -38,8 +51,8 @@ local lastRole = nil
 -- LOOP UPDATE
 -- ==============================================
 while task.wait(0.5) do
-    -- ✅ CARA AMAN SAMA KAYAK ESP PLAYER
-    local myRole = getRole()
+    -- ✅ PANGGIL FUNGSI YANG SUDAH ADA DI SINI
+    local myRole = getRole(player)
 
     -- 🔄 JALANKAN ULANG KETIKA ROLE BERUBAH
     if myRole ~= lastRole then
