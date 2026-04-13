@@ -1,7 +1,4 @@
 -- main.lua
-print("🔧 main.lua dijalankan sebagai base manager...")
-
--- Cek apakah getRole sudah siap
 if not _G.RoleData or not _G.RoleUpdate then
     error("❌ getRole.lua belum terdeteksi! Pastikan loader berjalan benar.")
 end
@@ -14,7 +11,7 @@ _G.FeatureState = _G.FeatureState or {
     -- Tambah fitur baru di sini nanti
 }
 
-print("✅ Base siap. Role awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
+print("✅ Posisi awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
 
 -- Fungsi global untuk toggle fitur (bisa dipanggil dari script lain)
 function _G.Toggle(featureName, enabled)
