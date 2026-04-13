@@ -8,9 +8,52 @@ _G.FeatureState = _G.FeatureState or {
     AutoFarm = false,
     ESP = false,
     KillAura = false,
-    -- Tambah fitur baru di sini nanti
+    -- Tambahkan fitur baru di sini
 }
-local roleOld = string.upper(_G.RoleData.TeamName))
+
+-- Simpan role sebelumnya
+local roleOld = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+
+print("✅ main.lua loaded sebagai base. Role awal:", roleOld)
+
+-- =============================================
+-- FUNCTION KHUSUS
+-- =============================================
+
+-- Reset / matikan SEMUA fitur sekaligus
+function _G.ResetAllFeatures()
+    for featureName, _ in pairs(_G.FeatureState) do
+        _G.FeatureState[featureName] = false
+    end
+    print("🔄 Semua fitur telah di-reset (dimatikan)")
+end
+
+-- Fungsi utama untuk sortir fitur berdasarkan role
+function _G.SortFeaturesByRole()
+    local currentRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+    
+    print("🔀 Sorting fitur untuk role:", currentRole)
+
+    _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
+
+    if currentRole == "LOBBY" or currentRole == "SPECTATOR" or currentRole == "SURVIVOR" then
+        print("🏠 Mode: Lobby / Spectator / Survivor")
+        -- Contoh: Fitur yang boleh aktif di lobby/spectator/survivor
+        -- _G.Toggle("ESP", true)           -- contoh
+        -- _G.Toggle("AutoFarm", false)     -- matikan yang berbahaya
+
+    elseif currentRole == "KILLER" then
+        print("🔪 Mode: KILLER")
+        -- Fitur khusus Killer
+        -- _G.Toggle("KillAura", true)
+        -- _G.Toggle("AutoFarm", true)
+
+    else
+        print("🌐 Mode: All Role / Role Lainnya")
+        -- Fitur yang aktif untuk semua role selain di atas
+        -- _G.Toggle("ESP", true)
+    end
+end
 
 -- Fungsi global untuk toggle fitur (bisa dipanggil dari script lain)
 function _G.Toggle(featureName, enabled)
@@ -22,26 +65,25 @@ function _G.Toggle(featureName, enabled)
     end
 end
 
--- Listener role change dari getRole.lua
-_G.RoleUpdate:Connect(function()
-    local role = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
-    print("🔄 [MAIN] Role berubah → " .. role)
-    local roleOld = role
+-- =============================================
+-- LISTENER ROLE CHANGE
+-- =============================================
 
-    -- Contoh logic otomatis berdasarkan role
-    if _G.RoleData.IsLobby then
-        print("🏠 Di Lobby → Matikan fitur berbahaya")
-        _G.Toggle("AutoFarm", false)
-        _G.Toggle("KillAura", false)
+_G.RoleUpdate:Connect(function()
+    local newRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+
+    -- Hanya proses jika role benar-benar berubah
+    if newRole ~= roleOld then
+        print("🔄 [MAIN] Role berubah → " .. newRole .. " (dari " .. roleOld .. ")")
+        
+        roleOld = newRole   -- Update role lama
+        
+        -- Panggil function sortir fitur
+        _G.SortFeaturesByRole()
     end
 end)
 
-if roleOld ~= "SPECTATOR" or roleOld ~= "SURVIVOR" then
-    print("Sortir Fitur Untuk Role Spectator dan Survivor")
-elseif roleOld ~= "KILLER" then
-    print("Fitur Untuk Killer")
-else
-    print("Fitur AllRole")
-end
+-- Jalankan sorting pertama kali saat main.lua di-load
+_G.SortFeaturesByRole()
 
-
+print("🎯 main.lua siap! Gunakan _G.Toggle('NamaFitur', true/false) dan _G.ResetAllFeatures()")
