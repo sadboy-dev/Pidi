@@ -27,8 +27,6 @@ for _, path in ipairs(modulesToLoad) do
     task.wait(0.4)  -- jeda agar stabil
 end
 
-print("✅ SEMUA MODULES DARI FOLDER modules/ TELAH DI-LOAD")
-
 
 local mainSuccess, mainErr = pcall(function()
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
