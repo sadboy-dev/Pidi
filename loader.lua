@@ -7,11 +7,11 @@ local BASE_URL = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/modules
 
 -- DAFTAR FILE YANG AKAN DI-DOWNLOAD
 local FILES = {
-    "getRole.lua",
-    "espPlayer.lua",
-    "boostFps.lua",
-    "ipadView.lua",
-    "crosshair.lua"
+    "getRole.lua"
+    --"espPlayer.lua",
+    --"boostFps.lua",
+    --"ipadView.lua",
+    --"crosshair.lua",
     -- "espGene.lua",
     -- "autoGen.lua"
 }
