@@ -3,8 +3,6 @@ if _G.__LOADER then return end
 _G.__LOADER = true
 
 -- loader.lua
-print("🚀 LOADER MULAI - Loading semua modules dari GitHub...")
-
 local baseUrl = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/"   -- GANTI DENGAN REPO KAMU
 
 -- Daftar modules yang ingin di-load (bisa tambah banyak)
@@ -31,8 +29,6 @@ end
 
 print("✅ SEMUA MODULES DARI FOLDER modules/ TELAH DI-LOAD")
 
--- Setelah semua modules siap, baru load main.lua sebagai base
-print("🔄 Memuat main.lua sebagai central base...")
 
 local mainSuccess, mainErr = pcall(function()
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
