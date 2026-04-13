@@ -10,6 +10,7 @@ _G.FeatureState = _G.FeatureState or {
     KillAura = false,
     -- Tambah fitur baru di sini nanti
 }
+local roleOld = string.upper(_G.RoleData.TeamName))
 
 print("✅ Posisi awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
 print(string.upper(_G.RoleData.TeamName))
@@ -28,6 +29,7 @@ end
 _G.RoleUpdate:Connect(function()
     local role = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
     print("🔄 [MAIN] Role berubah → " .. role)
+    local roleOld = role
 
     -- Contoh logic otomatis berdasarkan role
     if _G.RoleData.IsLobby then
