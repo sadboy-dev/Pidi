@@ -1,36 +1,22 @@
--- autoGen.lua - AUTO PERFECT GENERATOR (VERSI ANTI ERROR)
+-- autoGen.lua - VERSI FIX ERROR
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
 local player = Players.LocalPlayer
-local getRole = _G.getRole
 
 --------------------------------------------------
 -- ⚡ AUTO PERFECT GENERATOR (SURVIVOR ONLY)
 --------------------------------------------------
 task.spawn(function()
-    local playerGui = nil
-    local skillRemote = nil
+    local playerGui = player:WaitForChild("PlayerGui")
 
-    -- TUNGGU SAMPAI SEMUA SIAP
-    while not playerGui do
-        playerGui = player:FindFirstChild("PlayerGui")
-        task.wait(0.1)
-    end
-
-    while not skillRemote do
-        skillRemote = ReplicatedStorage:FindFirstChild("Remotes")
-        and ReplicatedStorage.Remotes:FindFirstChild("Generator")
-        and ReplicatedStorage.Remotes.Generator:FindFirstChild("SkillCheckResultEvent")
-        task.wait(0.1)
-    end
+    local skillRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Generator"):WaitForChild("SkillCheckResultEvent")
 
     local lastGenPoint = nil
     local lastGenModel = nil
 
-    -- FUNGSI CARI GENERATOR
     local function getGenerators()
         local gens = {}
         local map = workspace:FindFirstChild("Map")
@@ -51,14 +37,11 @@ task.spawn(function()
             for i = 1, 4 do
                 local point = gen:FindFirstChild("GeneratorPoint" .. i)
                 if point then
-                    -- ✅ TAMBAH PROTEKSI
-                    if root and root.Position then
-                        local dist = (root.Position - point.Position).Magnitude
-                        if dist < closestDist then
-                            closestDist = dist
-                            closestGen = gen
-                            closestPoint = point
-                        end
+                    local dist = (root.Position - point.Position).Magnitude
+                    if dist < closestDist then
+                        closestDist = dist
+                        closestGen = gen
+                        closestPoint = point
                     end
                 end
             end
@@ -69,9 +52,10 @@ task.spawn(function()
     while true do
         task.wait(0.1)
 
-        -- ✅ CEK ROLE DULU
-        if not getRole then continue end
-        local myRole = getRole(player)
+        -- ✅ PANGGIL TANPA PARAMETER
+        local myRole = _G.getRole()
+        
+        -- ✅ HANYA JALAN KALAU SURVIVOR
         if myRole ~= "SURVIVOR" then continue end
 
         local char = player.Character
@@ -85,19 +69,13 @@ task.spawn(function()
                 lastGenPoint = genPoint
             end
 
-            -- ✅ CEK GUI
-            if playerGui then
-                local gui = playerGui:FindFirstChild("SkillCheckPromptGui")
-                if gui then
-                    local check = gui:FindFirstChild("Check")
-                    if check and check.Visible then
-                        if lastGenPoint and root and root.Position and lastGenPoint.Position then
-                            if (root.Position - lastGenPoint.Position).Magnitude < 6 then
-                                -- ✅ KIRIM KE SERVER
-                                skillRemote:FireServer("success", 1, lastGenModel, lastGenPoint)
-                                check.Visible = false
-                            end
-                        end
+            local gui = playerGui:FindFirstChild("SkillCheckPromptGui")
+            if gui then
+                local check = gui:FindFirstChild("Check")
+                if check and check.Visible then
+                    if lastGenPoint and (root.Position - lastGenPoint.Position).Magnitude < 6 then
+                        skillRemote:FireServer("success", 1, lastGenModel, lastGenPoint)
+                        check.Visible = false
                     end
                 end
             end
