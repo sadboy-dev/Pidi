@@ -12,6 +12,7 @@ _G.FeatureState = _G.FeatureState or {
 }
 
 print("✅ Posisi awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
+print(string.upper(_G.RoleData.TeamName))
 
 -- Fungsi global untuk toggle fitur (bisa dipanggil dari script lain)
 function _G.Toggle(featureName, enabled)
