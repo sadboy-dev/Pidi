@@ -1,4 +1,4 @@
--- espGene.lua - VERSI FIX ERROR LINE 115
+-- espGene.lua - VERSI AMBIL ROLE SAMA KAYAK ESP PLAYER
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -111,11 +111,11 @@ end
 -- LOOP UTAMA
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- ✅ TAMBAH PROTEKSI: CEK DULU ADA ATAU ENGGA
-    if not _G.getRole then return end
+    -- ✅ CARA AMBIL ROLE SAMA PERSIS KAYAK DI ESP PLAYER
+    local getRole = _G.getRole
+    if not getRole then return end
     
-    -- ✅ PANGGIL TANPA PARAMETER
-    local myRole = _G.getRole()
+    local myRole = getRole()
 
     -- ✅ HANYA SPECTATOR & SURVIVOR
     if myRole ~= "SPECTATOR" and myRole ~= "SURVIVOR" then
