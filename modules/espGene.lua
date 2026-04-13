@@ -1,4 +1,4 @@
--- espGene.lua - VERSI AMBIL ROLE SAMA KAYAK ESP PLAYER
+-- espGene.lua - VERSI SIMPEL & PASTI NYALA
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 
@@ -110,11 +110,11 @@ end
 -- ==============================================
 -- LOOP UTAMA
 -- ==============================================
+-- ✅ KITA SIMPAN getRole KE VARIABEL DULU
+local getRole = _G.getRole
+
 RunService.RenderStepped:Connect(function()
-    -- ✅ CARA AMBIL ROLE SAMA PERSIS KAYAK DI ESP PLAYER
-    local getRole = _G.getRole
-    if not getRole then return end
-    
+    -- ✅ AMBIL ROLE
     local myRole = getRole()
 
     -- ✅ HANYA SPECTATOR & SURVIVOR
