@@ -37,4 +37,3 @@ _G.RoleUpdate:Connect(function()
     end
 end)
 
-print("🎯 main.lua siap! Gunakan _G.Toggle('NamaFitur', true/false) untuk mengatur fitur.")
