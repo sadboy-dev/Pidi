@@ -1,44 +1,66 @@
--- MAIN.LUA
-if _G.__MAIN then return end
-_G.__MAIN = true
+-- main.lua
 
--- TUNGGU SEMUA SIAP
-repeat task.wait() until _G.getRole and _G.espPlayer and _G.boostFps and _G.ipadView and _G.crosshair
-task.wait(0.5)
+-- Load getRole.lua terlebih dahulu
+loadstring(game:HttpGet("https://raw.githubusercontent.com/.../getRole.lua"))() 
+-- Ganti link di atas dengan link getRole.lua kamu (atau pakai require jika di module)
 
-print("====================================")
-print("✅ SCRIPT LOAD SELESAI")
-print("====================================")
+print("✅ getRole.lua telah di-load")
 
-local getRole = _G.getRole
-local espPlayer = _G.espPlayer
-local boostFps = _G.boostFps
-local ipadView = _G.ipadView
-local crosshair = _G.crosshair
+-- Tunggu sampai _G.RoleData tersedia
+repeat
+    task.wait(0.1)
+until _G.RoleData and _G.RoleUpdate
 
-local lastRole = nil
+print("📡 Role system siap! Team saat ini:", _G.RoleData.TeamName)
 
-local function updateAll()
-    local myRole = getRole()
+-- =============================================
+-- CONTOH PENGGUNAAN DI MAIN.LUA
+-- =============================================
 
-    -- ==============================================
-    -- 🔄 JALANKAN ULANG KETIKA ROLE BERUBAH
-    -- ==============================================
-    if myRole ~= lastRole then
-        print("🎭 ROLE BERUBAH: " .. myRole)
-        
-        boostFps()    -- Jalan ulang
-        ipadView()    -- Jalan ulang
-        crosshair.Start() -- Jalan ulang
-        
-        lastRole = myRole
+-- 1. Mendapatkan data role saat ini
+local function printCurrentRole()
+    print("🔹 Role Saat Ini:")
+    print("   Team Name :", _G.RoleData.TeamName)
+    print("   Is Lobby  :", _G.RoleData.IsLobby)
+end
+
+-- Cetak role pertama kali
+printCurrentRole()
+
+-- 2. Mendengarkan perubahan role secara real-time
+_G.RoleUpdate:Connect(function()
+    print("🔄 Role telah berubah!")
+    printCurrentRole()
+    
+    -- Contoh aksi berdasarkan role
+    if _G.RoleData.IsLobby then
+        print("🏠 Kamu sedang di Lobby (Spectator)")
+        -- Masukkan kode untuk lobby di sini
+    elseif _G.RoleData.TeamName == "murderer" then
+        print("🔪 Kamu adalah Murderer!")
+    elseif _G.RoleData.TeamName == "sheriff" then
+        print("🔫 Kamu adalah Sheriff!")
+    elseif _G.RoleData.TeamName == "innocent" then
+        print("👤 Kamu adalah Innocent!")
+    else
+        print("❓ Role tidak dikenali: " .. _G.RoleData.TeamName)
+    end
+end)
+
+-- =============================================
+-- CONTOH FUNGSI TAMBAHAN (Opsional)
+-- =============================================
+
+-- Fungsi untuk mendapatkan role dalam format yang lebih bersih
+local function getRole()
+    if _G.RoleData.IsLobby then
+        return "Lobby"
+    else
+        return _G.RoleData.TeamName:upper()
     end
 end
 
--- CEK TERUS MENERUS
-while task.wait(0.5) do
-    updateAll()
-end
+-- Contoh penggunaan fungsi
+print("Role fungsi:", getRole())
 
--- ESP JALAN SENDIRI
-_G.espPlayer.Start()
+-- Kamu bisa memanggil getRole() kapan saja di script lain
