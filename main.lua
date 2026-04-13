@@ -26,8 +26,8 @@ until _G.espPlayer
 and _G.boostFps 
 and _G.ipadView 
 and _G.crosshair 
-and _G.espGene 
-and _G.autoGen
+-- and _G.espGene 
+-- and _G.autoGen
 
 task.wait(0.5)
 
@@ -42,8 +42,8 @@ local espPlayer = _G.espPlayer
 local boostFps = _G.boostFps
 local ipadView = _G.ipadView
 local crosshair = _G.crosshair
-local espGene = _G.espGene
-local autoGen = _G.autoGen
+-- local espGene = _G.espGene
+-- local autoGen = _G.autoGen
 
 local lastRole = nil
 
@@ -76,5 +76,5 @@ end
 -- JALANKAN FITUR LAIN
 -- ==============================================
 if espPlayer then espPlayer.Start() end
-if espGene then espGene.Start() end
-if autoGen then autoGen.Start() end
+-- if espGene then espGene.Start() end
+-- if autoGen then autoGen.Start() end
