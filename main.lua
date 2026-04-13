@@ -1,4 +1,4 @@
--- MAIN.LUA - VERSI FINAL 100% AMAN
+-- MAIN.LUA - VERSI FIX ERROR LINE 56
 if _G.__MAIN then return end
 _G.__MAIN = true
 
@@ -38,13 +38,14 @@ local lastRole = nil
 -- LOOP UPDATE
 -- ==============================================
 while task.wait(0.5) do
-    -- ✅ PANGGIL TANPA PARAMETER (getRole())
+    -- ✅ CARA AMAN SAMA KAYAK ESP PLAYER
     local myRole = getRole()
 
     -- 🔄 JALANKAN ULANG KETIKA ROLE BERUBAH
     if myRole ~= lastRole then
         print("🎭 ROLE BERUBAH: " .. tostring(myRole))
         
+        -- ✅ TAMBAH PROTEKSI IF DULU
         if boostFps then boostFps() end
         if ipadView then ipadView() end
         if crosshair then crosshair.Start() end
