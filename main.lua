@@ -1,40 +1,42 @@
-repeat
-    task.wait(0.1)
-until _G.RoleData and _G.RoleUpdate
+-- main.lua
+print("🔧 main.lua dijalankan sebagai base manager...")
 
-print("📡 Role system siap! Team saat ini:", _G.RoleData.TeamName)
-
--- =============================================
--- CONTOH PENGGUNAAN DI MAIN.LUA
--- =============================================
-
--- 1. Mendapatkan data role saat ini
-local function printCurrentRole()
-    print("🔹 Role Saat Ini:")
-    print("   Team Name :", _G.RoleData.TeamName)
-    print("   Is Lobby  :", _G.RoleData.IsLobby)
+-- Cek apakah getRole sudah siap
+if not _G.RoleData or not _G.RoleUpdate then
+    error("❌ getRole.lua belum terdeteksi! Pastikan loader berjalan benar.")
 end
 
--- Cetak role pertama kali
-printCurrentRole()
+-- Tabel global untuk menyimpan status ON/OFF semua fitur
+_G.FeatureState = _G.FeatureState or {
+    AutoFarm = false,
+    ESP = false,
+    KillAura = false,
+    -- Tambah fitur baru di sini nanti
+}
 
--- 2. Mendengarkan perubahan role secara real-time
-_G.RoleUpdate:Connect(function()
-    print("🔄 Role telah berubah!")
-    printCurrentRole()
-    
-    -- Contoh aksi berdasarkan role
-    if _G.RoleData.IsLobby then
-        print("🏠 Kamu sedang di Lobby (Spectator)")
-        -- Masukkan kode untuk lobby di sini
-    elseif _G.RoleData.TeamName == "survivor" then
-        print("🔪 Kamu adalah Survivor!")
-    elseif _G.RoleData.TeamName == "killer" then
-        print("🔫 Kamu adalah Killer!")
+print("✅ Base siap. Role awal:", _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName))
+
+-- Fungsi global untuk toggle fitur (bisa dipanggil dari script lain)
+function _G.Toggle(featureName, enabled)
+    if _G.FeatureState[featureName] ~= nil then
+        _G.FeatureState[featureName] = enabled
+        print("🔄 [" .. featureName .. "] " .. (enabled and "ON" or "OFF"))
     else
-        print("❓ Role tidak dikenali: " .. _G.RoleData.TeamName)
+        warn("❌ Fitur tidak ditemukan: " .. featureName)
+    end
+end
+
+-- Listener role change dari getRole.lua
+_G.RoleUpdate:Connect(function()
+    local role = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+    print("🔄 [MAIN] Role berubah → " .. role)
+
+    -- Contoh logic otomatis berdasarkan role
+    if _G.RoleData.IsLobby then
+        print("🏠 Di Lobby → Matikan fitur berbahaya")
+        _G.Toggle("AutoFarm", false)
+        _G.Toggle("KillAura", false)
     end
 end)
 
-
--- Kamu bisa memanggil getRole() kapan saja di script lain
+print("🎯 main.lua siap! Gunakan _G.Toggle('NamaFitur', true/false) untuk mengatur fitur.")
