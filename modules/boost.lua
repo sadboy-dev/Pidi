@@ -1,142 +1,133 @@
--- ==================== AIMBOT VEIL - MOBILE VERSION ====================
+-- ==================== AIMBOT VEIL - AUTO AKTIF SAAT DEKAT ====================
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
--- Settings
-local AimbotEnabled = false
-local ToughWall = false          -- Aim through wall
-local Smoothness = 0.25          -- Semakin kecil = semakin cepat snap (0.1 - 0.4 recommended)
-local AuraRange = 400            -- Jarak maksimal
-local TargetType = "Killer"      -- "Killer" atau "Survivor"
-local AimPart = "Head"           -- "Head", "Torso", "HumanoidRootPart"
+-- ==================== SETTINGS ====================
+local AimbotEnabled = true          -- Ubah ke false jika ingin mati total
+local MaxDistance = 30              -- Jarak maksimal agar aimbot aktif (ubah sesuai keinginan, misal 25 atau 40)
+local AimPart = "Head"              -- "Head", "HumanoidRootPart", atau "UpperTorso"
+local Smoothness = 0.22             -- 0.1 = sangat cepat (snap), 0.35 = lebih smooth/legit
+local ToughWall = false             -- true = tembus tembok, false = cek wall
+local TargetTeamOpposite = true     -- true = aim ke musuh (tim berbeda)
 
+local Prediction = 0.12             -- Prediksi gerakan musuh (0.08 - 0.18 recommended)
+
+-- Variabel internal
 local LockedTarget = nil
+local LastTargetPart = nil
 
--- Fungsi dapatkan target terdekat
-local function GetClosestTarget()
-    local closest = nil
-    local shortestDist = AuraRange
+-- ==================== FUNGSI UTAMA ====================
+local function GetLocalRoot()
+    local char = LocalPlayer.Character
+    return char and char:FindFirstChild("HumanoidRootPart")
+end
+
+local function IsValidTarget(plr)
+    if plr == LocalPlayer or not plr.Character then return false end
+    
+    local hum = plr.Character:FindFirstChild("Humanoid")
+    if not hum or hum.Health <= 20 then return false end
+    
+    -- Cek tim (musuh)
+    if TargetTeamOpposite and plr.Team == LocalPlayer.Team then return false end
+    
+    return true
+end
+
+local function GetClosestTarget(root)
+    local closestPart = nil
+    local closestDist = MaxDistance + 1
 
     for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local hum = plr.Character:FindFirstChild("Humanoid")
-            if hum and hum.Health > 0 then
-                local isKiller = plr.Team ~= LocalPlayer.Team  -- Sesuaikan logic team jika game punya team berbeda
-                if (TargetType == "Killer" and isKiller) or (TargetType == "Survivor" and not isKiller) then
-                    local part = plr.Character:FindFirstChild(AimPart) or plr.Character:FindFirstChild("HumanoidRootPart")
+        if IsValidTarget(plr) then
+            local targetRoot = plr.Character:FindFirstChild("HumanoidRootPart")
+            if targetRoot then
+                local dist = (root.Position - targetRoot.Position).Magnitude
+                if dist < closestDist then
+                    local part = plr.Character:FindFirstChild(AimPart) or targetRoot
                     if part then
-                        local dist = (LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and 
-                                     (LocalPlayer.Character.HumanoidRootPart.Position - part.Position).Magnitude) or math.huge
-
-                        if dist < shortestDist then
-                            -- Cek wall (jika ToughWall off)
-                            if ToughWall or true then  -- Ganti dengan raycast jika ingin akurat
-                                shortestDist = dist
-                                closest = part
-                            end
-                        end
+                        closestDist = dist
+                        closestPart = part
+                        LockedTarget = plr.Character
                     end
                 end
             end
         end
     end
-    return closest
+    return closestPart
 end
 
--- Fungsi utama aiming (Camera CFrame)
+local function CanSeeTarget(targetPart, root)
+    if ToughWall then return true end
+    if not targetPart or not root then return false end
+    
+    local ray = Ray.new(root.Position, (targetPart.Position - root.Position).Unit * (targetPart.Position - root.Position).Magnitude)
+    local hit, _ = Workspace:FindPartOnRayWithIgnoreList(ray, {LocalPlayer.Character, LockedTarget})
+    
+    return hit == nil or hit:IsDescendantOf(LockedTarget)
+end
+
 local function AimAt(targetPart)
     if not targetPart then return end
-
-    local root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    
+    local root = GetLocalRoot()
     if not root then return end
 
-    -- Prediction sederhana (bisa ditambah velocity jika mau lebih akurat)
-    local predictedPos = targetPart.Position -- + (targetPart.Velocity * 0.1)
+    -- Prediction
+    local predictedPos = targetPart.Position
+    if targetPart.Velocity then
+        predictedPos = predictedPos + (targetPart.Velocity * Prediction)
+    end
 
-    -- Pitch adjustment berdasarkan jarak (seperti di script asli)
+    -- Pitch adjustment sederhana (mirip script asli)
     local distance = (root.Position - predictedPos).Magnitude
     local extraPitch = 0
-    if distance >= 190 then extraPitch = 15
-    elseif distance >= 150 then extraPitch = 10
-    elseif distance >= 90 then extraPitch = 5 end
+    if distance > 25 then extraPitch = 8
+    elseif distance > 15 then extraPitch = 5 end
 
     local targetCFrame = CFrame.new(Camera.CFrame.Position, predictedPos + Vector3.new(0, extraPitch, 0))
 
-    -- Smooth aiming
+    -- Smooth aim
     Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, Smoothness)
 end
 
--- Main Loop (RenderStepped = smooth di semua platform termasuk mobile)
+-- ==================== MAIN LOOP ====================
 RunService.RenderStepped:Connect(function()
     if not AimbotEnabled then 
         LockedTarget = nil
         return 
     end
 
-    local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-
-    -- Auto lock target terdekat
-    if not LockedTarget or not LockedTarget.Parent or LockedTarget.Parent:FindFirstChild("Humanoid").Health <= 0 then
-        LockedTarget = GetClosestTarget()
+    local root = GetLocalRoot()
+    if not root then 
+        LockedTarget = nil
+        return 
     end
 
-    if LockedTarget then
-        AimAt(LockedTarget)
+    -- Cek apakah masih ada target dekat
+    local currentTargetPart = nil
+    if LockedTarget and LockedTarget:FindFirstChild(AimPart) then
+        local dist = (root.Position - LockedTarget.HumanoidRootPart.Position).Magnitude
+        if dist <= MaxDistance and LockedTarget.Humanoid.Health > 20 then
+            currentTargetPart = LockedTarget:FindFirstChild(AimPart)
+        end
     end
-end)
 
--- ==================== MOBILE TOGGLE BUTTON ====================
-local gui = Instance.new("ScreenGui")
-gui.Name = "MobileAimbotGUI"
-gui.ResetOnSpawn = false
-gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    -- Jika tidak ada target valid, cari yang terdekat
+    if not currentTargetPart then
+        currentTargetPart = GetClosestTarget(root)
+    end
 
-local btn = Instance.new("TextButton")
-btn.Size = UDim2.new(0, 100, 0, 100)
-btn.Position = UDim2.new(1, -120, 1, -120)
-btn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-btn.Text = "Aimbot\nOFF"
-btn.TextColor3 = Color3.new(1,1,1)
-btn.TextScaled = true
-btn.Font = Enum.Font.GothamBold
-btn.ZIndex = 999
-btn.Parent = gui
-
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 20)
-corner.Parent = btn
-
-btn.MouseButton1Click:Connect(function()
-    AimbotEnabled = not AimbotEnabled
-    btn.Text = "Aimbot\n" .. (AimbotEnabled and "ON" or "OFF")
-    btn.BackgroundColor3 = AimbotEnabled and Color3.fromRGB(60, 255, 60) or Color3.fromRGB(255, 60, 60)
-    
-    if not AimbotEnabled then
+    -- Aim hanya jika target valid dan tidak ada wall (jika ToughWall off)
+    if currentTargetPart and CanSeeTarget(currentTargetPart, root) then
+        AimAt(currentTargetPart)
+        LastTargetPart = currentTargetPart
+    else
         LockedTarget = nil
     end
 end)
 
--- Drag support untuk tombol (mobile friendly)
-local dragging = false
-btn.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-    end
-end)
-
-btn.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
-end)
-
-RunService.RenderStepped:Connect(function()
-    if dragging then
-        local mouse = game.Players.LocalPlayer:GetMouse()
-        btn.Position = UDim2.new(0, mouse.X - btn.AbsoluteSize.X/2, 0, mouse.Y - btn.AbsoluteSize.Y/2)
-    end
-end)
+print("Aimbot Veil Auto-Dekat telah aktif! (Max Distance:", MaxDistance, "studs)")
