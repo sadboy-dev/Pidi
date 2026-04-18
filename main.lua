@@ -12,7 +12,7 @@ _G.FeatureState = _G.FeatureState or {
 }
 
 -- Simpan role sebelumnya
-local roleOld = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+local roleOld = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
 
 print("✅Awal:", roleOld)
 
@@ -30,11 +30,7 @@ end
 
 -- Fungsi utama untuk sortir fitur berdasarkan role
 function _G.SortFeaturesByRole()
-    local currentRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
-    if currentRole == "LOBBY" then
-        local currentRole = "SPECTATOR"
-    end
-    
+    local currentRole = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVOR" then
@@ -51,7 +47,6 @@ function _G.SortFeaturesByRole()
 
     elseif currentRole == "SPECTATOR" then
         print("🏠 Team: SPECTATOR")
-        print("Proses ON ipadView")
         _G.Toggle("ipadView", true)
 
     else
@@ -77,7 +72,7 @@ end
 -- =============================================
 
 _G.RoleUpdate:Connect(function()
-    local newRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+    local newRole = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
 
     -- Hanya proses jika role benar-benar berubah
     if newRole ~= roleOld then
