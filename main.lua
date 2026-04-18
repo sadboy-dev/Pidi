@@ -51,6 +51,7 @@ function _G.SortFeaturesByRole()
 
     elseif currentRole == "SPECTATOR" then
         print("🏠 Team: SPECTATOR")
+        _G.Toggle("ipadView", true)
 
     else
         print("🌐 Mode: All Role / Role Lainnya")
