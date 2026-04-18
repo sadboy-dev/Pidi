@@ -1,164 +1,231 @@
--- espGene.lua - VERSI FINAL & AMAN
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
-
-local player = Players.LocalPlayer
-local espGenObjects = {}
 
 -- ==============================================
--- FUNGSI GET ROLE (SAMA PERSIS DI SCRIPT KAMU)
+-- CONFIG
 -- ==============================================
-local function getRole(plr)
-    if plr.Team then
-        local n = plr.Team.Name:lower()
-        if n:find("killer") then return "KILLER" end
-        if n:find("survivor") then return "SURVIVOR" end
+local GENE_FOLDER = workspace:FindFirstChild("Generators") -- sesuaikan nama folder
+
+local wasEnabled = false
+local progressEnabled = false
+
+-- ==============================================
+-- CREATE ESP BOX
+-- ==============================================
+local function createESP(gen)
+    if not gen then return end
+
+    local old = gen:FindFirstChild("ESP_Generator")
+    if old then old:Destroy() end
+
+    local h = Instance.new("Highlight")
+    h.Name = "ESP_Generator"
+    h.FillTransparency = 0.5
+    h.OutlineTransparency = 0
+    h.FillColor = Color3.fromRGB(255, 215, 0) -- Gold color
+    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    h.Parent = gen
+end
+
+local function removeESP(gen)
+    if gen then
+        local h = gen:FindFirstChild("ESP_Generator")
+        if h then h:Destroy() end
     end
-    return "UNKNOWN"
 end
 
 -- ==============================================
--- FUNGSI HAPUS ESP
+-- CREATE PROGRESS TEXT
 -- ==============================================
-local function removeGenESP(obj)
-    if espGenObjects[obj] then
-        local data = espGenObjects[obj]
-        if data.highlight then data.highlight:Destroy() end
-        if data.billboard then data.billboard:Destroy() end
-        espGenObjects[obj] = nil
+local function createProgress(gen)
+    if not gen then return end
+
+    local old = gen:FindFirstChild("ESP_Progress")
+    if old then old:Destroy() end
+
+    local bill = Instance.new("BillboardGui")
+    bill.Name = "ESP_Progress"
+    bill.Size = UDim2.new(0, 100, 0, 40)
+    bill.AlwaysOnTop = true
+    bill.StudsOffset = Vector3.new(0, 3, 0)
+
+    local txt = Instance.new("TextLabel")
+    txt.Size = UDim2.new(1,0,1,0)
+    txt.BackgroundTransparency = 1
+    txt.TextColor3 = Color3.fromRGB(255,255,255)
+    txt.TextStrokeTransparency = 0
+    txt.TextScaled = true
+    txt.Text = "0%"
+    txt.Parent = bill
+
+    bill.Parent = gen
+end
+
+local function removeProgress(gen)
+    if gen then
+        local t = gen:FindFirstChild("ESP_Progress")
+        if t then t:Destroy() end
+    end
+end
+
+local function updateProgress(gen)
+    if not gen then return end
+
+    local gui = gen:FindFirstChild("ESP_Progress")
+    if not gui then return end
+
+    local txt = gui:FindFirstChildOfClass("TextLabel")
+    if not txt then return end
+
+    -- 🔍 AMBIL PROGRESS (sesuaikan dengan game kamu)
+    local progress = 0
+
+    if gen:FindFirstChild("Progress") and gen.Progress:IsA("NumberValue") then
+        progress = math.clamp(gen.Progress.Value, 0, 100)
+    elseif gen:FindFirstChild("Percent") and gen.Percent:IsA("NumberValue") then
+        progress = math.clamp(gen.Percent.Value, 0, 100)
+    elseif gen:FindFirstChild("Progress") and gen.Progress:IsA("IntValue") then
+        progress = math.clamp(gen.Progress.Value, 0, 100)
+    end
+
+    txt.Text = math.floor(progress) .. "%"
+end
+
+-- ==============================================
+-- APPLY TO ALL GENERATORS
+-- ==============================================
+local function applyESPToGenerators()
+    if not GENE_FOLDER then return end
+
+    for _, gen in pairs(GENE_FOLDER:GetChildren()) do
+        createESP(gen)
+        if progressEnabled then
+            createProgress(gen)
+        end
+    end
+end
+
+local function removeESPFromGenerators()
+    if not GENE_FOLDER then return end
+
+    for _, gen in pairs(GENE_FOLDER:GetChildren()) do
+        removeESP(gen)
+        removeProgress(gen)
     end
 end
 
 -- ==============================================
--- FUNGSI BUAT / UPDATE ESP
+-- START / STOP FUNCTIONS
 -- ==============================================
-local function createGenESP(obj, color, percent)
-    local data = espGenObjects[obj]
-
-    if data then
-        data.highlight.FillColor = color
-        data.highlight.OutlineColor = color
-        data.label.Text = percent .. "%"
-        data.label.TextColor3 = color
+local function startESPGenerator()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if _G.FeatureState.espGenerator then
         return
     end
 
-    local h = Instance.new("Highlight")
-    h.Name = "GenESP"
-    h.FillColor = color
-    h.FillTransparency = 0.5
-    h.OutlineColor = color
-    h.OutlineTransparency = 0
-    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    h.Parent = obj
+    _G.FeatureState.espGenerator = true
+    applyESPToGenerators()
+    print("[FEATURED]: ESP Generator -> ON")
+end
 
-    local bill = Instance.new("BillboardGui")
-    bill.Name = "GenGUI"
-    bill.Size = UDim2.new(0,100,0,40)
-    bill.AlwaysOnTop = true
-    bill.Parent = obj
+local function stopESPGenerator()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if not _G.FeatureState.espGenerator then
+        return
+    end
 
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(1,0,1,0)
-    label.BackgroundTransparency = 1
-    label.TextScaled = false
-    label.TextSize = 14
-    label.Font = Enum.Font.SourceSansBold
-    label.TextStrokeTransparency = 0
-    label.Text = percent .. "%"
-    label.TextColor3 = color
-    label.Parent = bill
+    _G.FeatureState.espGenerator = false
+    removeESPFromGenerators()
+    print("[FEATURED]: ESP Generator -> OFF")
+end
 
-    espGenObjects[obj] = {
-        highlight = h,
-        billboard = bill,
-        label = label
-    }
+local function startProgressFeature()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if _G.FeatureState.generatorProgress then
+        return
+    end
+
+    _G.FeatureState.generatorProgress = true
+    progressEnabled = true
+
+    if _G.FeatureState.espGenerator then
+        applyESPToGenerators()
+    end
+
+    print("[FEATURED]: Generator Progress -> ON")
+end
+
+local function stopProgressFeature()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if not _G.FeatureState.generatorProgress then
+        return
+    end
+
+    _G.FeatureState.generatorProgress = false
+    progressEnabled = false
+
+    if GENE_FOLDER then
+        for _, gen in pairs(GENE_FOLDER:GetChildren()) do
+            removeProgress(gen)
+        end
+    end
+
+    print("[FEATURED]: Generator Progress -> OFF")
 end
 
 -- ==============================================
--- CEK PROGRESS GENERATOR
+-- UPDATE LOOP
 -- ==============================================
-local function getGeneratorProgress(gen)
-    local progress = 0
+RunService.RenderStepped:Connect(function()
+    local espEnabled = _G.FeatureState and _G.FeatureState.espGenerator
+    local progressEnabledCheck = _G.FeatureState and _G.FeatureState.generatorProgress
 
-    if gen:GetAttribute("Progress") then
-        progress = gen:GetAttribute("Progress")
-    elseif gen:GetAttribute("RepairProgress") then
-        progress = gen:GetAttribute("RepairProgress")
-    else
-        for _, v in pairs(gen:GetDescendants()) do
-            if v:IsA("NumberValue") or v:IsA("IntValue") then
-                local name = v.Name:lower()
-                if name:find("progress") or name:find("repair") or name:find("percent") then
-                    progress = v.Value
-                    break
-                end
+    if espEnabled and not wasEnabled then
+        wasEnabled = true
+        applyESPToGenerators()
+    elseif not espEnabled and wasEnabled then
+        wasEnabled = false
+        removeESPFromGenerators()
+    end
+
+    if progressEnabledCheck and not progressEnabled then
+        progressEnabled = true
+        if espEnabled then
+            applyESPToGenerators()
+        end
+    elseif not progressEnabledCheck and progressEnabled then
+        progressEnabled = false
+        if GENE_FOLDER then
+            for _, gen in pairs(GENE_FOLDER:GetChildren()) do
+                removeProgress(gen)
             end
         end
     end
 
-    progress = (progress > 1) and progress / 100 or progress
-    return math.clamp(progress, 0, 1)
-end
-
--- ==============================================
--- CARI SEMUA GENERATOR
--- ==============================================
-local function getGenerators()
-    local gens = {}
-    local map = workspace:FindFirstChild("Map")
-    if not map then return gens end
-
-    for _, v in pairs(map:GetDescendants()) do
-        if v.Name == "Generator" then
-            table.insert(gens, v)
+    -- Update progress values
+    if espEnabled and progressEnabledCheck and GENE_FOLDER then
+        for _, gen in pairs(GENE_FOLDER:GetChildren()) do
+            updateProgress(gen)
         end
-    end
-
-    return gens
-end
-
--- ==============================================
--- LOOP UTAMA + SORTIR ROLE AMAN
--- ==============================================
-RunService.RenderStepped:Connect(function()
-    -- ✅ AMBIL ROLE
-    local myRole = getRole(player)
-
-    -- ✅ SYARAT: HANYA SURVIVOR & SPECTATOR
-    if myRole ~= "SURVIVOR" and myRole ~= "SPECTATOR" then
-        -- Hapus semua ESP kalau role bukan yang diizinkan
-        for obj,_ in pairs(espGenObjects) do
-            removeGenESP(obj)
-        end
-        return
-    end
-
-    -- ✅ JALANKAN ESP
-    for _, gen in pairs(getGenerators()) do
-        local progress = getGeneratorProgress(gen)
-        local percent = math.floor(progress * 100)
-        local color = Color3.fromRGB(255,255,255):Lerp(Color3.fromRGB(0,255,0), progress)
-
-        createGenESP(gen, color, percent)
     end
 end)
 
 -- ==============================================
--- SIMPAN KE GLOBAL (UNTUK MAIN.LUA)
+-- GLOBAL CONTROL
 -- ==============================================
-_G.espGene = {
-    Start = function()
-        print("⚡ ESP GENERATOR AKTIF (SURV & SPEC ONLY)")
-    end,
-    Stop = function()
-        print("❌ ESP GENERATOR MATI")
-        for obj, _ in pairs(espGenObjects) do
-            removeGenESP(obj)
-        end
-    end
-}
+_G.espGenerator = {}
+_G.espGenerator.Start = startESPGenerator
+_G.espGenerator.Stop = stopESPGenerator
 
-return _G.espGene
+_G.generatorProgress = {}
+_G.generatorProgress.Start = startProgressFeature
+_G.generatorProgress.Stop = stopProgressFeature
+
+return _G.espGenerator
