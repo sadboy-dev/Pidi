@@ -1,10 +1,8 @@
--- ipadView.lua - FOV 100 STABIL
 local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-local IPAD_FOV = 100 -- ✅ Nilai FOV yang kamu mau
+local IPAD_FOV = 100
 
 local function applyFOV()
     if workspace.CurrentCamera then
@@ -13,29 +11,35 @@ local function applyFOV()
     end
 end
 
--- ==============================================
--- LOOP PASTIKAN FOV TETAP
--- ==============================================
+-- LOOP DENGAN CEK TOGGLE
 RunService.RenderStepped:Connect(function()
-    if workspace.CurrentCamera and workspace.CurrentCamera.FieldOfView ~= IPAD_FOV then
-        workspace.CurrentCamera.FieldOfView = IPAD_FOV
+    if _G.FeatureState and _G.FeatureState.ipadView then
+        if workspace.CurrentCamera and workspace.CurrentCamera.FieldOfView ~= IPAD_FOV then
+            workspace.CurrentCamera.FieldOfView = IPAD_FOV
+        end
     end
 end)
 
--- ==============================================
--- APPLY KETIKA SPAWN
--- ==============================================
+-- APPLY SAAT SPAWN (HANYA JIKA ON)
 player.CharacterAdded:Connect(function()
     task.wait(0.5)
-    applyFOV()
+    if _G.FeatureState and _G.FeatureState.ipadView then
+        applyFOV()
+    end
 end)
 
--- ==============================================
--- SIMPAN KE GLOBAL (BISA DIPANGGIL ULANG)
--- ==============================================
+-- FUNCTION GLOBAL
 local function startBoost()
+    _G.FeatureState.ipadView = true
     applyFOV()
 end
 
+local function stopBoost()
+    _G.FeatureState.ipadView = false
+    print("📱 IPAD VIEW: OFF")
+end
+
 _G.ipadView = startBoost
+_G.stopIpadView = stopBoost
+
 return startBoost
