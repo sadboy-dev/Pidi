@@ -9,6 +9,7 @@ local baseUrl = "https://raw.githubusercontent.com/sadboy-dev/Pidi/main/"   -- G
 local modulesToLoad = {
     "modules/getRole.lua",   -- fitur role
     "modules/ipadView.lua",
+    "modules/espPlayer.lua",
     -- "modules/autofarm.lua",
     -- tambahkan fitur lain di sini
 }
