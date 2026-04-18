@@ -6,6 +6,7 @@ end
 -- Tabel global untuk menyimpan status ON/OFF semua fitur
 _G.FeatureState = _G.FeatureState or {
     ipadView = false,
+    espPlayer = false,
     boostFps = false,
     crosshair = false,
     -- Tambahkan fitur baru di sini
@@ -36,15 +37,19 @@ function _G.SortFeaturesByRole()
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVOR" then
+        _G.Toggle("ipadView", true)
+        _G.Toggle("espPlayer", true)
         -- Fitur yang boleh aktif di survivor
         -- _G.Toggle("ESP", true)
 
     elseif currentRole == "KILLER" then
+        _G.Toggle("espPlayer", true)
         -- Fitur khusus killer
         -- _G.Toggle("KillAura", true)
 
     elseif currentRole == "SPECTATOR" then
         _G.Toggle("ipadView", true)
+        _G.Toggle("espPlayer", true)
     end
 end
 
