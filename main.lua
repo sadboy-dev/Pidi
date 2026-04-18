@@ -36,8 +36,8 @@ function _G.SortFeaturesByRole()
     print("[TEAM]: " .. currentRole)
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
-    if currentRole == "SURVIVOR" then
-        print("[DEBUG] Mengaktifkan fitur untuk SURVIVOR")
+    if currentRole == "SURVIVORS" then
+        print("[DEBUG] Mengaktifkan fitur untuk SURVIVORS")
         _G.Toggle("ipadView", true)
         _G.Toggle("espPlayer", true)
 
