@@ -1,3 +1,4 @@
+local RunService = game:GetService("RunService")
 local espGenObjects = {}
 local wasEnabled = false
 local progressEnabled = false
