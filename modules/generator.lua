@@ -1,50 +1,55 @@
--- espGene.lUA - VERSI DENGAN TOGGLE ON OFF
-local RunService = game:GetService("RunService")
-local Workspace = game:GetService("Workspace")
+-- ANTI DOUBLE RUN
+if _G.__ULTRA_FIX_SELECTED_FEATURES then return end
+_G.__ULTRA_FIX_SELECTED_FEATURES = true
+
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
-local espGenObjects = {}
-local ESP_ENABLED = true -- DEFAULT NYALA
 
--- ==============================================
--- 🎛️ BUAT TOMBOL ON OFF
--- ==============================================
-local Gui = Instance.new("ScreenGui")
-Gui.Name = "ToggleESP_GUI"
-Gui.Parent = player.PlayerGui
+--------------------------------------------------
+-- 👀 FOV
+--------------------------------------------------
+local IPAD_FOV = 100
 
-local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0,200,0,50)
-Frame.Position = UDim2.new(0.05,0,0.1,0)
-Frame.BackgroundColor3 = Color3.new(0.1,0.1,0.1)
-Frame.BorderColor3 = Color3.new(0,1,0)
-Frame.BorderSizePixel = 2
-Frame.Parent = Gui
+local function applyFOV()
+    if workspace.CurrentCamera then
+        workspace.CurrentCamera.FieldOfView = IPAD_FOV
+    end
+end
 
-local Text = Instance.new("TextLabel")
-Text.Size = UDim2.new(0.6,0,1,0)
-Text.Position = UDim2.new(0.05,0,0,0)
-Text.BackgroundTransparency = 1
-Text.Text = "ESP GENERATOR"
-Text.TextColor3 = Color3.new(1,1,1)
-Text.Font = Enum.Font.SourceSansBold
-Text.TextSize = 16
-Text.Parent = Frame
+RunService.RenderStepped:Connect(function()
+    if workspace.CurrentCamera and workspace.CurrentCamera.FieldOfView ~= IPAD_FOV then
+        workspace.CurrentCamera.FieldOfView = IPAD_FOV
+    end
+end)
 
-local Btn = Instance.new("TextButton")
-Btn.Size = UDim2.new(0.3,0,0.8,0)
-Btn.Position = UDim2.new(0.68,0,0.1,0)
-Btn.BackgroundColor3 = Color3.new(0,1,0)
-Btn.Text = "ON"
-Btn.TextColor3 = Color3.new(0,0,0)
-Btn.Font = Enum.Font.SourceSansBold
-Btn.TextSize = 14
-Btn.Parent = Frame
+--------------------------------------------------
+-- ⚡ BOOST
+--------------------------------------------------
+local function startBoost()
+    pcall(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    end)
 
--- ==============================================
--- FUNGSI GET ROLE
--- ==============================================
+    Lighting.GlobalShadows = false
+
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Smoke") or v:IsA("Fire") then
+            v.Enabled = false
+        end
+
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.Plastic
+        end
+    end
+end
+
+--------------------------------------------------
+-- 🎭 ROLE
+--------------------------------------------------
 local function getRole(plr)
     if plr.Team then
         local n = plr.Team.Name:lower()
@@ -54,9 +59,81 @@ local function getRole(plr)
     return "UNKNOWN"
 end
 
--- ==============================================
--- FUNGSI HAPUS ESP
--- ==============================================
+--------------------------------------------------
+-- ✨ ESP PLAYER
+--------------------------------------------------
+local function applyESP(plr)
+    if plr == player then return end
+
+    local function setup(char)
+        if not char then return end
+
+        local old = char:FindFirstChild("ESP")
+        if old then old:Destroy() end
+
+        local h = Instance.new("Highlight")
+        h.Name = "ESP"
+        h.FillTransparency = 0.5
+        h.OutlineTransparency = 0
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        h.Parent = char
+    end
+
+    if plr.Character then
+        setup(plr.Character)
+    end
+
+    plr.CharacterAdded:Connect(function(c)
+        task.wait(0.5)
+        setup(c)
+    end)
+end
+
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local h = plr.Character:FindFirstChild("ESP")
+            if h then
+                local role = getRole(plr)
+                if role == "KILLER" then
+                    h.FillColor = Color3.fromRGB(255,0,0)
+                else
+                    h.FillColor = Color3.fromRGB(0,170,255)
+                end
+            end
+        end
+    end
+end)
+
+for _, p in pairs(Players:GetPlayers()) do
+    applyESP(p)
+end
+Players.PlayerAdded:Connect(applyESP)
+
+--------------------------------------------------
+-- 🖥️ CONSOLE
+--------------------------------------------------
+local lastRole = ""
+
+RunService.RenderStepped:Connect(function()
+    local role = getRole(player)
+
+    if role ~= lastRole then
+        if role == "UNKNOWN" then
+            print("📍 STATUS: LOBBY")
+        else
+            print("📍 STATUS: INGAME")
+            print("🎭 ROLE KAMU:", role)
+        end
+        lastRole = role
+    end
+end)
+
+--------------------------------------------------
+-- 🔧 ESP GENERATOR
+--------------------------------------------------
+local espGenObjects = {}
+
 local function removeGenESP(obj)
     if espGenObjects[obj] then
         local data = espGenObjects[obj]
@@ -66,31 +143,22 @@ local function removeGenESP(obj)
     end
 end
 
--- ==============================================
--- FUNGSI BUAT / UPDATE ESP
--- ==============================================
 local function createGenESP(obj, color, percent)
     local data = espGenObjects[obj]
 
     if data then
         data.highlight.FillColor = color
-        data.highlight.OutlineColor = color
         data.label.Text = percent .. "%"
         data.label.TextColor3 = color
         return
     end
 
     local h = Instance.new("Highlight")
-    h.Name = "GenESP"
     h.FillColor = color
     h.FillTransparency = 0.5
-    h.OutlineColor = color
-    h.OutlineTransparency = 0
-    h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     h.Parent = obj
 
     local bill = Instance.new("BillboardGui")
-    bill.Name = "GenGUI"
     bill.Size = UDim2.new(0,100,0,40)
     bill.AlwaysOnTop = true
     bill.Parent = obj
@@ -113,9 +181,6 @@ local function createGenESP(obj, color, percent)
     }
 end
 
--- ==============================================
--- CEK PROGRESS GENERATOR
--- ==============================================
 local function getGeneratorProgress(gen)
     local progress = 0
 
@@ -139,9 +204,6 @@ local function getGeneratorProgress(gen)
     return math.clamp(progress, 0, 1)
 end
 
--- ==============================================
--- CARI SEMUA GENERATOR
--- ==============================================
 local function getGenerators()
     local gens = {}
     local map = workspace:FindFirstChild("Map")
@@ -156,19 +218,14 @@ local function getGenerators()
     return gens
 end
 
--- ==============================================
--- LOOP UTAMA
--- ==============================================
 RunService.RenderStepped:Connect(function()
-    -- 🔴 JIKA OFF, HAPUS SEMUA
-    if not ESP_ENABLED then
+    if getRole(player) == "UNKNOWN" then
         for obj,_ in pairs(espGenObjects) do
             removeGenESP(obj)
         end
         return
     end
 
-    -- 🟢 JIKA ON, TAMPILKAN
     for _, gen in pairs(getGenerators()) do
         local progress = getGeneratorProgress(gen)
         local percent = math.floor(progress * 100)
@@ -178,22 +235,80 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- ==============================================
--- EVENT KLIK TOMBOL
--- ==============================================
-Btn.MouseButton1Click:Connect(function()
-    ESP_ENABLED = not ESP_ENABLED
-    if ESP_ENABLED then
-        Btn.BackgroundColor3 = Color3.new(0,1,0)
-        Btn.Text = "ON"
-    else
-        Btn.BackgroundColor3 = Color3.new(1,0,0)
-        Btn.Text = "OFF"
-        -- Hapus langsung saat klik off
-        for obj,_ in pairs(espGenObjects) do
-            removeGenESP(obj)
+--------------------------------------------------
+-- ⚡ AUTO PERFECT GENERATOR (SURVIVOR ONLY)
+--------------------------------------------------
+task.spawn(function()
+    local playerGui = player:WaitForChild("PlayerGui")
+
+    local skillRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Generator"):WaitForChild("SkillCheckResultEvent")
+
+    local lastGenPoint = nil
+    local lastGenModel = nil
+
+    local function getClosestGeneratorPoint(root)
+        local gens = getGenerators()
+        local closestGen, closestPoint, closestDist = nil, nil, 10
+
+        for _, gen in ipairs(gens) do
+            for i = 1, 4 do
+                local point = gen:FindFirstChild("GeneratorPoint" .. i)
+                if point then
+                    local dist = (root.Position - point.Position).Magnitude
+                    if dist < closestDist then
+                        closestDist = dist
+                        closestGen = gen
+                        closestPoint = point
+                    end
+                end
+            end
+        end
+        return closestGen, closestPoint, closestDist
+    end
+
+    while true do
+        task.wait(0.1)
+
+        -- hanya jalan kalau survivor
+        if getRole(player) ~= "SURVIVOR" then continue end
+
+        local char = player.Character
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+
+        if root then
+            local genModel, genPoint, dist = getClosestGeneratorPoint(root)
+
+            if genPoint and dist < 6 then
+                lastGenModel = genModel
+                lastGenPoint = genPoint
+            end
+
+            local gui = playerGui:FindFirstChild("SkillCheckPromptGui")
+            if gui then
+                local check = gui:FindFirstChild("Check")
+                if check and check.Visible then
+                    if lastGenPoint and (root.Position - lastGenPoint.Position).Magnitude < 6 then
+                        skillRemote:FireServer("success", 1, lastGenModel, lastGenPoint)
+                        check.Visible = false
+                    end
+                end
+            end
         end
     end
 end)
 
-print("✅ ESP GENE LOADED!")
+--------------------------------------------------
+-- RESPAWN
+--------------------------------------------------
+player.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    applyFOV()
+end)
+
+--------------------------------------------------
+-- START
+--------------------------------------------------
+startBoost()
+applyFOV()
+
+print("🔥 SCRIPT FINAL + AUTO SKILLCHECK 🔥")
