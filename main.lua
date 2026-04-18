@@ -46,6 +46,7 @@ function _G.SortFeaturesByRole()
 
     elseif currentRole == "KILLER" then
         _G.Toggle("espPlayer", true)
+        -- _G.Toggle("espGenerator", true)
         _G.Toggle("generatorProgress", true)
 
     elseif currentRole == "SPECTATOR" then
