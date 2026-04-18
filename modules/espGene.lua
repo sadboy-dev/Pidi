@@ -154,8 +154,14 @@ local function startProgressFeature()
     _G.FeatureState.generatorProgress = true
     progressEnabled = true
 
-    if _G.FeatureState.espGenerator then
-        applyESPToGenerators() -- Reapply to show progress
+    -- Update existing ESP to show progress
+    for _, gen in pairs(getGenerators()) do
+        if espGenObjects[gen] then
+            local data = espGenObjects[gen]
+            local progress = getGeneratorProgress(gen)
+            local percent = math.floor(progress * 100)
+            data.label.Text = percent .. "%"
+        end
     end
 
     print("[FEATURED]: Generator Progress -> ON")
@@ -190,6 +196,7 @@ task.spawn(function()
     
     RunService.RenderStepped:Connect(function()
         local espEnabled = _G.FeatureState and _G.FeatureState.espGenerator
+        local progressEnabledCheck = _G.FeatureState and _G.FeatureState.generatorProgress
 
         if espEnabled and not wasEnabled then
             wasEnabled = true
@@ -209,6 +216,12 @@ task.spawn(function()
             local color = Color3.fromRGB(255,255,255):Lerp(Color3.fromRGB(0,255,0), progress)
 
             createGenESP(gen, color, percent)
+
+            -- Update progress text if enabled
+            if progressEnabledCheck and espGenObjects[gen] then
+                espGenObjects[gen].label.Text = percent .. "%"
+                espGenObjects[gen].label.TextColor3 = color
+            end
         end
     end)
 end)
