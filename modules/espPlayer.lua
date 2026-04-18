@@ -36,13 +36,55 @@ local function removeESP(char)
     end
 end
 
+local function applyESPToAllPlayers()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            setupESP(plr.Character)
+        end
+    end
+end
+
+local function removeESPFromAllPlayers()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr.Character then
+            removeESP(plr.Character)
+        end
+    end
+end
+
+local function startESP()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if _G.FeatureState.espPlayer then
+        return
+    end
+
+    _G.FeatureState.espPlayer = true
+    applyESPToAllPlayers()
+    print("[FEATURED]: ESP Player -> ON")
+end
+
+local function stopESP()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    if not _G.FeatureState.espPlayer then
+        return
+    end
+
+    _G.FeatureState.espPlayer = false
+    removeESPFromAllPlayers()
+    print("[FEATURED]: ESP Player -> OFF")
+end
+
 -- ==============================================
 -- APPLY KE PLAYER
 -- ==============================================
 local function handlePlayer(plr)
     if plr == player then return end
 
-    if plr.Character then
+    if plr.Character and _G.FeatureState and _G.FeatureState.espPlayer then
         setupESP(plr.Character)
     end
 
@@ -62,10 +104,10 @@ RunService.RenderStepped:Connect(function()
 
     if enabled and not wasEnabled then
         wasEnabled = true
-        startESP()
+        applyESPToAllPlayers()
     elseif not enabled and wasEnabled then
         wasEnabled = false
-        stopESP()
+        removeESPFromAllPlayers()
     end
 
     if not enabled then
@@ -89,45 +131,6 @@ RunService.RenderStepped:Connect(function()
         end
     end
 end)
-
--- ==============================================
--- START / STOP
--- ==============================================
-local function applyESPToAllPlayers()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= player and plr.Character then
-            setupESP(plr.Character)
-        end
-    end
-end
-
-local function removeESPFromAllPlayers()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr.Character then
-            removeESP(plr.Character)
-        end
-    end
-end
-
-local function startESP()
-    if not _G.FeatureState then
-        _G.FeatureState = {}
-    end
-    _G.FeatureState.espPlayer = true
-
-    applyESPToAllPlayers()
-    print("[FEATURED]: ESP Player -> ON")
-end
-
-local function stopESP()
-    if not _G.FeatureState then
-        _G.FeatureState = {}
-    end
-    _G.FeatureState.espPlayer = false
-
-    removeESPFromAllPlayers()
-    print("[FEATURED]: ESP Player -> OFF")
-end
 
 -- ==============================================
 -- INIT PLAYER LISTENER
