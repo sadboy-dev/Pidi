@@ -20,9 +20,9 @@ for _, path in ipairs(modulesToLoad) do
     end)
     
     if success then
-        print("✅ Module loaded:", path)
+        print("✅ Loaded:", path)
     else
-        warn("❌ Gagal load module:", path, "| Error:", err)
+        warn("❌ Loaded:", path, "| Error:", err)
     end
     task.wait(0.4)  -- jeda agar stabil
 end
@@ -33,7 +33,7 @@ local mainSuccess, mainErr = pcall(function()
 end)
 
 if mainSuccess then
-    print("🎉 LOADER SELESAI! main.lua sekarang berjalan sebagai base.")
+    print("🎉 Loader Success!")
 else
     warn("❌ Gagal memuat main.lua:", mainErr)
 end
