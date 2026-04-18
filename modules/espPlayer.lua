@@ -126,7 +126,7 @@ RunService.RenderStepped:Connect(function()
                 if role == "KILLER" then
                     h.FillColor = Color3.fromRGB(255, 0, 0)
                     colorSet = true
-                elseif role == "SURVIVOR" then
+                elseif role == "SURVIVORS" then
                     h.FillColor = Color3.fromRGB(0, 170, 255)
                     colorSet = true
                 elseif role == "SPECTATOR" then
