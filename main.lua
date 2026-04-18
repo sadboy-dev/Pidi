@@ -37,19 +37,20 @@ function _G.SortFeaturesByRole()
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVOR" then
+        print("[DEBUG] Mengaktifkan fitur untuk SURVIVOR")
         _G.Toggle("ipadView", true)
         _G.Toggle("espPlayer", true)
-        -- Fitur yang boleh aktif di survivor
-        -- _G.Toggle("ESP", true)
 
     elseif currentRole == "KILLER" then
+        print("[DEBUG] Mengaktifkan fitur untuk KILLER")
         _G.Toggle("espPlayer", true)
-        -- Fitur khusus killer
-        -- _G.Toggle("KillAura", true)
 
     elseif currentRole == "SPECTATOR" then
+        print("[DEBUG] Mengaktifkan fitur untuk SPECTATOR")
         _G.Toggle("ipadView", true)
         _G.Toggle("espPlayer", true)
+    else
+        print("[DEBUG] Role tidak dikenali: " .. currentRole)
     end
 end
 
