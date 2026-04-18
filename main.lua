@@ -11,10 +11,14 @@ _G.FeatureState = _G.FeatureState or {
     -- Tambahkan fitur baru di sini
 }
 
+local function formatFeatureName(name)
+    return name:gsub("(%l)(%u)", "%1 %2"):gsub("^%l", string.upper)
+end
+
 -- Simpan role sebelumnya
 local roleOld = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
 
-print("✅Awal:", roleOld)
+print("[TEAM]: " .. roleOld)
 
 -- =============================================
 -- FUNCTION KHUSUS
@@ -25,35 +29,24 @@ function _G.ResetAllFeatures()
     for featureName, _ in pairs(_G.FeatureState) do
         _G.FeatureState[featureName] = false
     end
-    print("🔄 Resetting (dimatikan)")
 end
 
 -- Fungsi utama untuk sortir fitur berdasarkan role
 function _G.SortFeaturesByRole()
     local currentRole = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
+    print("[TEAM]: " .. currentRole)
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVOR" then
-        print("🌐 Team: SURVIVOR")
-        -- Contoh: Fitur yang boleh aktif di lobby/spectator/survivor
-        -- _G.Toggle("ESP", true)           -- contoh
-        -- _G.Toggle("AutoFarm", false)     -- matikan yang berbahaya
+        -- Fitur yang boleh aktif di survivor
+        -- _G.Toggle("ESP", true)
 
     elseif currentRole == "KILLER" then
-        print("🔪 Team: KILLER")
-        -- Fitur khusus Killer
+        -- Fitur khusus killer
         -- _G.Toggle("KillAura", true)
-        -- _G.Toggle("AutoFarm", true)
 
     elseif currentRole == "SPECTATOR" then
-        print("🏠 Team: SPECTATOR")
         _G.Toggle("ipadView", true)
-
-    else
-        print("🌐 Mode: All Role / Role Lainnya")
-        print(currentRole)
-        -- Fitur yang aktif untuk semua role selain di atas
-        -- _G.Toggle("ESP", true)
     end
 end
 
@@ -61,7 +54,7 @@ end
 function _G.Toggle(featureName, enabled)
     if _G.FeatureState[featureName] ~= nil then
         _G.FeatureState[featureName] = enabled
-        print("🔄 [" .. featureName .. "] " .. (enabled and "ON" or "OFF"))
+        print("[FEATURED]: " .. formatFeatureName(featureName) .. " -> " .. (enabled and "ON" or "OFF"))
     else
         warn("❌ Fitur tidak ditemukan: " .. featureName)
     end
@@ -76,11 +69,7 @@ _G.RoleUpdate:Connect(function()
 
     -- Hanya proses jika role benar-benar berubah
     if newRole ~= roleOld then
-        print("🔄 [MAIN] Role berubah: " .. roleOld .. " → " .. newRole .. "")
-        
         roleOld = newRole   -- Update role lama
-        
-        -- Panggil function sortir fitur
         _G.SortFeaturesByRole()
     end
 end)
