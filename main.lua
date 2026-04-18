@@ -18,8 +18,6 @@ end
 -- Simpan role sebelumnya
 local roleOld = _G.RoleData.IsLobby and "SPECTATOR" or string.upper(_G.RoleData.TeamName or "")
 
-print("[TEAM]: " .. roleOld)
-
 -- =============================================
 -- FUNCTION KHUSUS
 -- =============================================
