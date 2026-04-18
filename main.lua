@@ -14,7 +14,7 @@ _G.FeatureState = _G.FeatureState or {
 -- Simpan role sebelumnya
 local roleOld = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
 
-print("✅Role awal:", roleOld)
+print("✅Awal:", roleOld)
 
 -- =============================================
 -- FUNCTION KHUSUS
@@ -25,7 +25,7 @@ function _G.ResetAllFeatures()
     for featureName, _ in pairs(_G.FeatureState) do
         _G.FeatureState[featureName] = false
     end
-    print("🔄 Semua fitur telah di-reset (dimatikan)")
+    print("🔄 Resetting (dimatikan)")
 end
 
 -- Fungsi utama untuk sortir fitur berdasarkan role
@@ -47,11 +47,12 @@ function _G.SortFeaturesByRole()
         -- _G.Toggle("KillAura", true)
         -- _G.Toggle("AutoFarm", true)
 
-    elseif currentRole == "SPECTATOR" then
+    elseif currentRole == "SPECTATOR" or currentRole == "LOBBY" then
         print("🏠 Team: SPECTATOR")
 
     else
         print("🌐 Mode: All Role / Role Lainnya")
+        print(currentRole)
         -- Fitur yang aktif untuk semua role selain di atas
         -- _G.Toggle("ESP", true)
     end
