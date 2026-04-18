@@ -31,8 +31,10 @@ end
 -- Fungsi utama untuk sortir fitur berdasarkan role
 function _G.SortFeaturesByRole()
     local currentRole = _G.RoleData.IsLobby and "LOBBY" or string.upper(_G.RoleData.TeamName)
+    if currentRole == "LOBBY" then
+        local currentRole = "SPECTATOR"
+    end
     
-
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVOR" then
@@ -47,7 +49,7 @@ function _G.SortFeaturesByRole()
         -- _G.Toggle("KillAura", true)
         -- _G.Toggle("AutoFarm", true)
 
-    elseif currentRole == "SPECTATOR" or currentRole == "LOBBY" then
+    elseif currentRole == "SPECTATOR" then
         print("🏠 Team: SPECTATOR")
 
     else
