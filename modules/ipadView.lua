@@ -16,14 +16,12 @@ local function applyFOV()
     if workspace.CurrentCamera then
         cacheOriginalFOV()
         workspace.CurrentCamera.FieldOfView = IPAD_FOV
-        print("📱 IPAD VIEW: FOV = " .. IPAD_FOV)
     end
 end
 
 local function restoreFOV()
     if workspace.CurrentCamera and originalFOV then
         workspace.CurrentCamera.FieldOfView = originalFOV
-        print("📱 IPAD VIEW: Kembali ke FOV asli = " .. originalFOV)
     end
 end
 
@@ -60,12 +58,13 @@ local function startBoost()
     end
     _G.FeatureState.ipadView = true
     applyFOV()
+    print("[FEATURED]: Ipad View -> ON")
 end
 
 local function stopBoost()
     _G.FeatureState.ipadView = false
     restoreFOV()
-    print("📱 IPAD VIEW: OFF")
+    print("[FEATURED]: Ipad View -> OFF")
 end
 
 _G.ipadView = startBoost
