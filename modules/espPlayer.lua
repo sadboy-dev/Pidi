@@ -2,7 +2,15 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
-local getRole = _G.getRole
+local function getPlayerRole(plr)
+    if not plr or not plr.Team then
+        return ""
+    end
+
+    return string.upper(plr.Team.Name or "")
+end
+
+local wasEnabled = false
 
 -- ==============================================
 -- SETUP ESP
@@ -40,7 +48,7 @@ local function handlePlayer(plr)
 
     plr.CharacterAdded:Connect(function(char)
         task.wait(0.5)
-        if _G.FeatureState.espPlayer then
+        if _G.FeatureState and _G.FeatureState.espPlayer then
             setupESP(char)
         end
     end)
@@ -50,13 +58,25 @@ end
 -- LOOP UPDATE WARNA (PAKAI TOGGLE)
 -- ==============================================
 RunService.RenderStepped:Connect(function()
-    if not (_G.FeatureState and _G.FeatureState.espPlayer) then return end
+    local enabled = _G.FeatureState and _G.FeatureState.espPlayer
+
+    if enabled and not wasEnabled then
+        wasEnabled = true
+        startESP()
+    elseif not enabled and wasEnabled then
+        wasEnabled = false
+        stopESP()
+    end
+
+    if not enabled then
+        return
+    end
 
     for _, plr in pairs(Players:GetPlayers()) do
         if plr ~= player and plr.Character then
             local h = plr.Character:FindFirstChild("ESP")
             if h then
-                local role = getRole(plr)
+                local role = getPlayerRole(plr)
 
                 if role == "KILLER" then
                     h.FillColor = Color3.fromRGB(255, 0, 0)
@@ -73,30 +93,40 @@ end)
 -- ==============================================
 -- START / STOP
 -- ==============================================
-local function startESP()
-    _G.FeatureState.espPlayer = true
-
+local function applyESPToAllPlayers()
     for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= player then
-            if plr.Character then
-                setupESP(plr.Character)
-            end
+        if plr ~= player and plr.Character then
+            setupESP(plr.Character)
         end
     end
-
-    print("✅ ESP ON")
 end
 
-local function stopESP()
-    _G.FeatureState.espPlayer = false
-
+local function removeESPFromAllPlayers()
     for _, plr in pairs(Players:GetPlayers()) do
         if plr.Character then
             removeESP(plr.Character)
         end
     end
+end
 
-    print("❌ ESP OFF")
+local function startESP()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    _G.FeatureState.espPlayer = true
+
+    applyESPToAllPlayers()
+    print("[FEATURED]: ESP Player -> ON")
+end
+
+local function stopESP()
+    if not _G.FeatureState then
+        _G.FeatureState = {}
+    end
+    _G.FeatureState.espPlayer = false
+
+    removeESPFromAllPlayers()
+    print("[FEATURED]: ESP Player -> OFF")
 end
 
 -- ==============================================
