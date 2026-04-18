@@ -3,6 +3,12 @@ local espGenObjects = {}
 local wasEnabled = false
 local progressEnabled = false
 
+-- Safety check for RunService
+if not RunService then
+    warn("RunService not available, ESP Generator module may not work properly")
+    return {}
+end
+
 local function removeGenESP(obj)
     if espGenObjects[obj] then
         local data = espGenObjects[obj]
@@ -176,28 +182,35 @@ local function stopProgressFeature()
     print("[FEATURED]: Generator Progress -> OFF")
 end
 
-RunService.RenderStepped:Connect(function()
-    local espEnabled = _G.FeatureState and _G.FeatureState.espGenerator
+-- ==============================================
+-- INIT AFTER LOAD
+-- ==============================================
+task.spawn(function()
+    task.wait(1) -- Wait for environment to be ready
+    
+    RunService.RenderStepped:Connect(function()
+        local espEnabled = _G.FeatureState and _G.FeatureState.espGenerator
 
-    if espEnabled and not wasEnabled then
-        wasEnabled = true
-        applyESPToGenerators()
-    elseif not espEnabled and wasEnabled then
-        wasEnabled = false
-        removeESPFromGenerators()
-    end
+        if espEnabled and not wasEnabled then
+            wasEnabled = true
+            applyESPToGenerators()
+        elseif not espEnabled and wasEnabled then
+            wasEnabled = false
+            removeESPFromGenerators()
+        end
 
-    if not espEnabled then
-        return
-    end
+        if not espEnabled then
+            return
+        end
 
-    for _, gen in pairs(getGenerators()) do
-        local progress = getGeneratorProgress(gen)
-        local percent = math.floor(progress * 100)
-        local color = Color3.fromRGB(255,255,255):Lerp(Color3.fromRGB(0,255,0), progress)
+        for _, gen in pairs(getGenerators()) do
+            local progress = getGeneratorProgress(gen)
+            local percent = math.floor(progress * 100)
+            local color = Color3.fromRGB(255,255,255):Lerp(Color3.fromRGB(0,255,0), progress)
 
-        createGenESP(gen, color, percent)
-    end
+            createGenESP(gen, color, percent)
+        end
+    end)
 end)
 
 -- ==============================================
