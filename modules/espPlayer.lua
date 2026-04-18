@@ -119,13 +119,22 @@ RunService.RenderStepped:Connect(function()
             local h = plr.Character:FindFirstChild("ESP")
             if h then
                 local role = getPlayerRole(plr)
-
+                
+                -- Debug: cek nilai role yang dikembalikan
+                local colorSet = false
+                
                 if role == "KILLER" then
                     h.FillColor = Color3.fromRGB(255, 0, 0)
+                    colorSet = true
                 elseif role == "SURVIVOR" then
                     h.FillColor = Color3.fromRGB(0, 170, 255)
-                else
+                    colorSet = true
+                elseif role == "SPECTATOR" then
                     h.FillColor = Color3.fromRGB(255, 255, 255)
+                    colorSet = true
+                else
+                    h.FillColor = Color3.fromRGB(128, 128, 128)
+                    print("[ESP DEBUG] Role tidak dikenali: '" .. role .. "' dari player: " .. plr.Name)
                 end
             end
         end
