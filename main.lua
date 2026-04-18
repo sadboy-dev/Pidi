@@ -7,6 +7,8 @@ end
 _G.FeatureState = _G.FeatureState or {
     ipadView = false,
     espPlayer = false,
+    espGenerator = false,
+    generatorProgress = false,
     boostFps = false,
     crosshair = false,
     -- Tambahkan fitur baru di sini
@@ -37,18 +39,20 @@ function _G.SortFeaturesByRole()
     _G.ResetAllFeatures()  -- Matikan semua fitur dulu setiap role berubah
 
     if currentRole == "SURVIVORS" then
-        print("[DEBUG] Mengaktifkan fitur untuk SURVIVORS")
         _G.Toggle("ipadView", true)
         _G.Toggle("espPlayer", true)
+        _G.Toggle("espGenerator", true)
+        _G.Toggle("generatorProgress", true)
 
     elseif currentRole == "KILLER" then
-        print("[DEBUG] Mengaktifkan fitur untuk KILLER")
         _G.Toggle("espPlayer", true)
+        _G.Toggle("generatorProgress", true)
 
     elseif currentRole == "SPECTATOR" then
-        print("[DEBUG] Mengaktifkan fitur untuk SPECTATOR")
         _G.Toggle("ipadView", true)
         _G.Toggle("espPlayer", true)
+        _G.Toggle("espGenerator", true)
+        _G.Toggle("generatorProgress", true)
     else
         print("[DEBUG] Role tidak dikenali: " .. currentRole)
     end
