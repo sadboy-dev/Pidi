@@ -10,6 +10,7 @@ local modulesToLoad = {
     "modules/getRole.lua",   -- fitur role
     "modules/ipadView.lua",
     "modules/espPlayer.lua",
+    "modules/espGene.lua",
     -- "modules/autofarm.lua",
     -- tambahkan fitur lain di sini
 }
