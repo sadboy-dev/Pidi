@@ -13,6 +13,12 @@ local modulesToLoad = {
     -- tambahkan fitur lain di sini
 }
 
+local function formatModuleName(path)
+    local name = path:match("([^/]+)%.lua$") or path
+    name = name:gsub("(%l)(%u)", "%1 %2")
+    return name:gsub("^%l", string.upper)
+end
+
 -- Load semua modules terlebih dahulu
 for _, path in ipairs(modulesToLoad) do
     local success, err = pcall(function()
@@ -20,20 +26,17 @@ for _, path in ipairs(modulesToLoad) do
     end)
     
     if success then
-        print("✅ Loaded:", path)
+        print("✅ Loaded: " .. formatModuleName(path))
     else
-        warn("❌ Loaded:", path, "| Error:", err)
+        warn("❌ Loaded: " .. formatModuleName(path) .. " | Error: " .. tostring(err))
     end
     task.wait(0.4)  -- jeda agar stabil
 end
-
 
 local mainSuccess, mainErr = pcall(function()
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
 end)
 
-if mainSuccess then
-    print("🎉 Loader Success!")
-else
-    warn("❌ Gagal memuat main.lua:", mainErr)
+if not mainSuccess then
+    warn("❌ Gagal memuat main.lua: " .. tostring(mainErr))
 end
